@@ -1,0 +1,39 @@
+apply plugin: "idea"
+apply plugin: "kotlin"
+apply plugin: 'org.jetbrains.intellij'
+
+version = '0.4.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repository.jetbrains.com/all"
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+}
+
+intellij {
+    version = '2016.1'
+    plugins = ['Kotlin', 'junit']
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.0.43'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}
