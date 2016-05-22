@@ -1,0 +1,1 @@
+# kspec-idea-plugin
