@@ -1,1 +1,1 @@
-# kspec-idea-plugin
+# spek-idea-plugin
