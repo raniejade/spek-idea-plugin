@@ -1,4 +1,4 @@
-package io.polymorphicpanda.kspec.idea
+package org.jetbrains.spek.idea
 
 import com.intellij.application.options.ModulesComboBox
 import com.intellij.execution.ui.ClassBrowser
@@ -18,20 +18,20 @@ import javax.swing.JPanel
 /**
  * @author Ranie Jade Ramiso
  */
-class KSpecSettingsEditor(val project: Project): SettingsEditor<KSpecRunConfiguration>() {
+class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfiguration>() {
     lateinit var panel: JPanel
     lateinit var module: ModulesComboBox
     lateinit var filter: EditorTextFieldWithBrowseButton
     lateinit var query: TextFieldWithHistory
 
 
-    override fun resetEditorFrom(configuration: KSpecRunConfiguration) {
+    override fun resetEditorFrom(configuration: SpekRunConfiguration) {
         module.selectedModule = configuration.configurationModule.module
         filter.text = configuration.filter
         query.text = configuration.query
     }
 
-    override fun applyEditorTo(configuration: KSpecRunConfiguration) {
+    override fun applyEditorTo(configuration: SpekRunConfiguration) {
         configuration.setModule(module.selectedModule)
         configuration.filter = filter.text
         configuration.query = query.text

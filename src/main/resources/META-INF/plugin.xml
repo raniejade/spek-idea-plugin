@@ -1,7 +1,7 @@
 <idea-plugin version="2">
-    <id>io.polymorphicpanda.kspec.kspec-idea-plugin</id>
-    <name>KSpec IDEA</name>
-    <version>0.4.0</version>
+    <id>org.jetbrains.spek.spek-idea-plugin</id>
+    <name>Spek IDEA</name>
+    <version>0.1.0</version>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
     <depends>org.jetbrains.kotlin</depends>
     <description><![CDATA[
@@ -16,7 +16,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="145.0"/>
+    <idea-version since-build="162.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -25,7 +25,7 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="io.polymorphicpanda.kspec.idea.KSpecRunConfigurationType"/>
+        <configurationType implementation="org.jetbrains.spek.idea.SpekRunConfigurationType"/>
     </extensions>
 
     <actions>

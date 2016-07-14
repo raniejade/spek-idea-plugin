@@ -1,4 +1,4 @@
-package io.polymorphicpanda.kspec.idea
+package org.jetbrains.spek.idea
 
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -15,7 +15,7 @@ import java.util.*
 /**
  * @author Ranie Jade Ramiso
  */
-class KSpecRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModule, factory: ConfigurationFactory, name: String)
+class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModule, factory: ConfigurationFactory, name: String)
 : ModuleBasedConfiguration<JavaRunConfigurationModule>(name, javaRunConfigurationModule, factory) {
 
     override fun getValidModules(): MutableCollection<Module> {
@@ -25,7 +25,7 @@ class KSpecRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModu
     var filter = ""
     var query = ""
 
-    override fun getConfigurationEditor() = KSpecSettingsEditor(project)
+    override fun getConfigurationEditor() = SpekSettingsEditor(project)
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         throw UnsupportedOperationException()
