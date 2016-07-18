@@ -2,7 +2,6 @@ package org.jetbrains.spek.idea
 
 import com.intellij.diagnostic.logging.LogConfigurationPanel
 import com.intellij.execution.*
-import com.intellij.execution.application.ApplicationConfiguration
 import com.intellij.execution.application.BaseJavaApplicationCommandLineState
 import com.intellij.execution.configurations.*
 import com.intellij.execution.process.ProcessHandler
@@ -10,7 +9,6 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
-import com.intellij.execution.testframework.sm.runner.SMTestLocator
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.util.JavaParametersUtil
 import com.intellij.openapi.module.Module
@@ -21,6 +19,10 @@ import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.util.PathUtil
 import org.jdom.Element
 import org.jetbrains.spek.idea.tooling.execution.SpekTestRunner
+import org.junit.platform.commons.util.PreconditionViolationException
+import org.junit.platform.engine.TestEngine
+import org.junit.platform.launcher.LauncherDiscoveryRequest
+import org.opentest4j.TestAbortedException
 import java.util.*
 
 /**
@@ -106,7 +108,15 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
                 val toolingJar = PathUtil.getJarPathForClass(SpekTestRunner::class.java)
 
-                params.classPath.add(toolingJar)
+                // TODO: temporary - list directory
+                val junitLauncherJar = PathUtil.getJarPathForClass(LauncherDiscoveryRequest::class.java)
+                val junitCommonJar = PathUtil.getJarPathForClass(PreconditionViolationException::class.java)
+                val junitPlatformJar = PathUtil.getJarPathForClass(TestEngine::class.java)
+                val openTest4jJar = PathUtil.getJarPathForClass(TestAbortedException::class.java)
+
+                params.classPath.addAll(
+                    mutableListOf(toolingJar, openTest4jJar, junitCommonJar, junitPlatformJar, junitLauncherJar)
+                )
 
                 params.mainClass = MAIN_CLASS
                 setupJavaParameters(params)

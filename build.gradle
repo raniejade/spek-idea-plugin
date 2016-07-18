@@ -21,11 +21,17 @@ version = '0.4.0'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://jetbrains.jfrog.io/jetbrains/spek-snapshots'
+    }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+    compile 'org.junit.platform:junit-platform-launcher:1.0.0-M1'
+
+    runtime 'org.jetbrains.spek:spek-junit-engine:1.0.0-SNAPSHOT'
 }
 
 intellij {
