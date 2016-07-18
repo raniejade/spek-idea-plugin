@@ -1,11 +1,13 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.application.options.ModulesComboBox
-import com.intellij.execution.ui.ClassBrowser
+import com.intellij.execution.ui.*
 import com.intellij.ide.util.ClassFilter
 import com.intellij.openapi.fileTypes.PlainTextLanguage
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.psi.JavaCodeFragment
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
@@ -20,43 +22,59 @@ import javax.swing.JPanel
  */
 class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfiguration>() {
     lateinit var panel: JPanel
-    lateinit var module: ModulesComboBox
-    lateinit var filter: EditorTextFieldWithBrowseButton
-    lateinit var query: TextFieldWithHistory
+    lateinit var commonJavaParameters: CommonJavaParametersPanel
+    lateinit var module: LabeledComponent<ModulesComboBox>
+    lateinit var jrePathEditor: JrePathEditor
+    lateinit var spec: LabeledComponent<EditorTextFieldWithBrowseButton>
+    lateinit var scope: LabeledComponent<TextFieldWithHistory>
 
+    lateinit var moduleSelector: ConfigurationModuleSelector
 
-    override fun resetEditorFrom(configuration: SpekRunConfiguration) {
-        module.selectedModule = configuration.configurationModule.module
-        filter.text = configuration.filter
-        query.text = configuration.query
-    }
-
-    override fun applyEditorTo(configuration: SpekRunConfiguration) {
-        configuration.setModule(module.selectedModule)
-        configuration.filter = filter.text
-        configuration.query = query.text
-    }
-
-    override fun createEditor() = panel
-
-    private fun createUIComponents() {
-        module = ModulesComboBox()
-        module.fillModules(project)
-
-        query = TextFieldWithHistory()
-        filter = EditorTextFieldWithBrowseButton(
-            project,
-            true,
-            JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE,
-            PlainTextLanguage.INSTANCE.associatedFileType
-        )
-
-        val scope: GlobalSearchScope
-        if (module.selectedModule == null) {
-            scope = GlobalSearchScope.allScope(project)
-        } else {
-            scope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module.selectedModule!!)
+    private val searchScope: GlobalSearchScope
+        get() {
+            return if (selectedModule == null) {
+                GlobalSearchScope.allScope(project)
+            } else {
+                GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(selectedModule!!)
+            }
         }
+
+    private var selectedModule: Module?
+        get() {
+            return module.component.selectedModule
+        }
+        set(value) {
+            module.component.selectedModule = value
+        }
+
+    private var selectedSpec: String
+        get() {
+            return spec.component.text
+        }
+        set(value) {
+            spec.component.text = value
+        }
+
+    private var selectedScope: String
+        get() {
+            return scope.component.text
+        }
+        set(value) {
+            scope.component.text = value
+        }
+
+    init {
+        module.component.fillModules(project)
+        moduleSelector = ConfigurationModuleSelector(project, module.component)
+        jrePathEditor.setDefaultJreSelector(DefaultJreSelector.fromModuleDependencies(module.component, false))
+        commonJavaParameters.setModuleContext(selectedModule)
+        commonJavaParameters.setHasModuleMacro()
+        module.component.addActionListener {
+            commonJavaParameters.setModuleContext(selectedModule)
+        }
+
+        val spekCls = PsiClassType.getTypeByName("org.jetbrains.spek.api.Spek", project, searchScope)
+        val subjectSpekCls = PsiClassType.getTypeByName("org.jetbrains.spek.api.SubjectSpek", project, searchScope)
 
 
         val browser = object: ClassBrowser(project, "") {
@@ -64,12 +82,12 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
 
                 return object: ClassFilter.ClassFilterWithScope {
-                    override fun getScope() = scope
+                    override fun getScope() = searchScope
 
                     override fun isAccepted(aClass: PsiClass): Boolean {
-                        return aClass.superTypes.contains(
-                            PsiClassType.getTypeByName("io.polymorphicpanda.kspec.KSpec", project, scope)
-                        )
+                        return aClass.superTypes.filter {
+                            it == spekCls || it.rawType() == subjectSpekCls
+                        }.any()
                     }
                 }
             }
@@ -77,12 +95,43 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
             override fun findClass(className: String): PsiClass? {
                 return JavaPsiFacade.getInstance(project)
-                    .findClass(className, scope)
+                    .findClass(className, searchScope)
             }
-
         }
 
-        browser.setField(filter)
+        browser.setField(spec.component)
+    }
+
+
+    override fun resetEditorFrom(configuration: SpekRunConfiguration) {
+        selectedModule = configuration.configurationModule.module
+        selectedSpec = configuration.spec
+        selectedScope = configuration.scope
+        moduleSelector.reset(configuration)
+    }
+
+    override fun applyEditorTo(configuration: SpekRunConfiguration) {
+        configuration.setModule(selectedModule)
+        configuration.spec = selectedSpec
+        configuration.scope = selectedScope
+        moduleSelector.applyTo(configuration)
+        commonJavaParameters.applyTo(configuration)
+    }
+
+    override fun createEditor() = panel
+
+    private fun createUIComponents() {
+        scope = LabeledComponent.create(
+            TextFieldWithHistory(), "Scope", "West"
+        )
+        scope.isEnabled = false
+
+        spec = LabeledComponent.create(EditorTextFieldWithBrowseButton(
+            project,
+            true,
+            JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE,
+            PlainTextLanguage.INSTANCE.associatedFileType
+        ), "Spec", "West")
 
     }
 }

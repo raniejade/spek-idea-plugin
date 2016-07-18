@@ -30,7 +30,8 @@ dependencies {
 
 intellij {
     version = '2016.2'
-    plugins = ['Kotlin', 'junit']
+    plugins = ['Kotlin', 'junit', 'cucumber-java:145.597']
+    downloadSources = true
 }
 
 task wrapper(type: Wrapper) {
