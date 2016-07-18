@@ -1,20 +1,26 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.diagnostic.logging.LogConfigurationPanel
-import com.intellij.execution.CommonJavaRunConfigurationParameters
-import com.intellij.execution.Executor
-import com.intellij.execution.JavaRunConfigurationExtensionManager
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.execution.configurations.JavaRunConfigurationModule
-import com.intellij.execution.configurations.ModuleBasedConfiguration
-import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.*
+import com.intellij.execution.application.ApplicationConfiguration
+import com.intellij.execution.application.BaseJavaApplicationCommandLineState
+import com.intellij.execution.configurations.*
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.runners.ProgramRunner
+import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
+import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
+import com.intellij.execution.testframework.sm.runner.SMTestLocator
+import com.intellij.execution.ui.ConsoleView
+import com.intellij.execution.util.JavaParametersUtil
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.intellij.util.PathUtil
 import org.jdom.Element
+import org.jetbrains.spek.idea.tooling.execution.SpekTestRunner
 import java.util.*
 
 /**
@@ -77,8 +83,60 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         }
     }
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
-        throw UnsupportedOperationException()
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
+        return object: BaseJavaApplicationCommandLineState<SpekRunConfiguration>(environment, this) {
+            override fun createJavaParameters(): JavaParameters {
+                val params = JavaParameters()
+                params.isUseClasspathJar = true
+                val module = myConfiguration.configurationModule
+                val jreHome = if (myConfiguration.isAlternativeJrePathEnabled) {
+                    myConfiguration.alternativeJrePath
+                } else {
+                    null
+                }
+
+                if (module.module != null) {
+                    val classPathType = JavaParametersUtil.getClasspathType(module, MAIN_CLASS, false)
+                    JavaParametersUtil.configureModule(module, params, classPathType, jreHome)
+                } else {
+                    JavaParametersUtil.configureProject(
+                        module.project, params, JavaParameters.JDK_AND_CLASSES_AND_TESTS, jreHome
+                    )
+                }
+
+                val toolingJar = PathUtil.getJarPathForClass(SpekTestRunner::class.java)
+
+                params.classPath.add(toolingJar)
+
+                params.mainClass = MAIN_CLASS
+                setupJavaParameters(params)
+
+                params.programParametersList.add(data.spec)
+
+                return params
+            }
+
+            fun createConsole(executor: Executor, processHandler: ProcessHandler): ConsoleView {
+                val consoleProperties = object: SMTRunnerConsoleProperties(
+                    this@SpekRunConfiguration, "cucumber", executor
+                ) {
+                    override fun getTestLocator() = SpekTestLocator()
+                }
+                return SMTestRunnerConnectionUtil.createAndAttachConsole(
+                    "spek",
+                    processHandler,
+                    consoleProperties
+                )
+            }
+
+            override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
+                val processHandler = startProcess()
+                val console = createConsole(executor, processHandler)
+                return DefaultExecutionResult(
+                    console, processHandler, *createActions(console, processHandler, executor)
+                )
+            }
+        }
     }
 
     override fun writeExternal(element: Element) {
@@ -141,5 +199,9 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
     override fun setEnvs(envs: MutableMap<String, String>) {
         data.envs = envs
+    }
+
+    companion object {
+        val MAIN_CLASS = "org.jetbrains.spek.idea.tooling.execution.MainKt"
     }
 }
