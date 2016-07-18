@@ -26,6 +26,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="org.jetbrains.spek.idea.SpekRunConfigurationType"/>
+        <runConfigurationProducer implementation="org.jetbrains.spek.idea.SpekRunConfigurationProducer"/>
+        <implicitUsageProvider implementation="org.jetbrains.spek.idea.SpekImplicitUsageProvider"/>
     </extensions>
 
     <actions>

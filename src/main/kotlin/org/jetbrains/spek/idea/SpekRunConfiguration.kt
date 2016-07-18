@@ -77,6 +77,11 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
             data.scope = value
         }
 
+
+    override fun suggestedName(): String {
+        return spec
+    }
+
     override fun getConfigurationEditor(): SettingsEditor<SpekRunConfiguration> {
         return SettingsEditorGroup<SpekRunConfiguration>().apply {
             addEditor("Configuration", SpekSettingsEditor(project))
@@ -194,7 +199,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     override fun isAlternativeJrePathEnabled() = data.isAlternativeJrePathEnabled
 
     override fun getPackage(): String {
-        TODO()
+        return ""
     }
 
     override fun setAlternativeJrePathEnabled(enabled: Boolean) {
