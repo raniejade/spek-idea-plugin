@@ -23,7 +23,7 @@ object SpekUtils {
         return null
     }
 
-    private fun isSpec(cls: KtLightClass): Boolean {
+    fun isSpec(cls: KtLightClass): Boolean {
         val superClass = cls.superClass
         if (superClass != null) {
             val fqName = superClass.qualifiedName

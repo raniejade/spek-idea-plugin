@@ -7,6 +7,8 @@ import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
 import org.junit.platform.launcher.core.LauncherFactory
+import java.io.CharArrayWriter
+import java.io.PrintWriter
 
 /**
  * @author Ranie Jade Ramiso
@@ -28,8 +30,13 @@ class SpekTestRunner(val spec: String) {
                 } else {
                     if (testExecutionResult.status != TestExecutionResult.Status.SUCCESSFUL) {
                         val throwable = testExecutionResult.throwable.get()
-                        out("testFailed name='$name' message='${throwable.message}'")
-                        throwable.printStackTrace(System.err)
+                        val writer = CharArrayWriter()
+                        throwable.printStackTrace(PrintWriter(writer))
+                        val details = writer.toString()
+                            .replace("\n", "|n")
+                            .replace("\r", "|r")
+
+                        out("testFailed name='$name' message='${throwable.message}' details='$details'")
 
                     } else {
                         out("testFinished name='$name'")
