@@ -3,7 +3,8 @@ package org.jetbrains.spek.idea
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.asJava.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
-import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.idea.refactoring.getLineNumber
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 /**
@@ -33,5 +34,17 @@ object SpekUtils {
             }
         }
         return false
+    }
+
+    fun getSpecBody(ktClass: KtClassOrObject): KtBlockExpression {
+        val constructorCall = ktClass.getSuperTypeListEntries()
+            .filterIsInstance<KtSuperTypeCallEntry>()
+            .first()
+
+        val arg =  constructorCall.valueArguments
+            .first() as KtValueArgument
+
+        val lambdaExpr = arg.firstChild as KtLambdaExpression
+        return lambdaExpr.bodyExpression!!
     }
 }

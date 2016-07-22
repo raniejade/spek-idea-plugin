@@ -16,8 +16,14 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.intellij.psi.PsiClassType
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PathUtil
 import org.jdom.Element
+import org.jetbrains.kotlin.asJava.KtLightClass
+import org.jetbrains.kotlin.asJava.KtLightClassForExplicitDeclaration
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.spek.idea.tooling.execution.SpekTestRunner
 import org.junit.platform.commons.util.PreconditionViolationException
 import org.junit.platform.engine.TestEngine
@@ -44,6 +50,11 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         var isAlternativeJrePathEnabled: Boolean
     )
 
+    private val searchScope: GlobalSearchScope
+        get() {
+            return configurationModule.searchScope
+        }
+
     override fun getValidModules(): MutableCollection<Module> {
         return Arrays.asList(*ModuleManager.getInstance(project).modules)
     }
@@ -61,12 +72,18 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         false
     )
 
+    private val model = SpekModel()
+
     var spec: String
         get() {
             return data.spec
         }
         set(value) {
             data.spec = value
+            if (value.isNotEmpty()) {
+                model.spec = (PsiClassType.getTypeByName(value, project, searchScope)
+                    .resolve() as KtLightClassForExplicitDeclaration).kotlinOrigin
+            }
         }
 
     var scope: String

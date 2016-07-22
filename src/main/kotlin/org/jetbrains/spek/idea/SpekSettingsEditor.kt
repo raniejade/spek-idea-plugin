@@ -13,6 +13,8 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiClassUtil
+import com.intellij.psi.util.PsiUtil
 import com.intellij.ui.EditorTextFieldWithBrowseButton
 import com.intellij.ui.TextFieldWithHistory
 import javax.swing.JPanel
@@ -75,7 +77,6 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
         val spekCls = PsiClassType.getTypeByName("org.jetbrains.spek.api.Spek", project, searchScope)
         val subjectSpekCls = PsiClassType.getTypeByName("org.jetbrains.spek.api.SubjectSpek", project, searchScope)
-
 
         val browser = object: ClassBrowser(project, "") {
             override fun getFilter(): ClassFilter.ClassFilterWithScope? {
