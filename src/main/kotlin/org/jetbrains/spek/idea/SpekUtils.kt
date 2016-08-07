@@ -23,19 +23,6 @@ object SpekUtils {
         "on"
     )
 
-    fun getSpec(element: PsiElement): KtLightClass? {
-        val ktClass = element.getParentOfType<KtClass>(true)
-        if (ktClass != null) {
-            val cls = ktClass.toLightClass()
-            if (cls != null && isSpec(cls)) {
-                return cls
-            }
-        } else if (element is KtLightClass && isSpec(element)) {
-            return element
-        }
-        return null
-    }
-
     fun isSpec(cls: KtLightClass): Boolean {
         val superClass = cls.superClass
         if (superClass != null) {
@@ -87,6 +74,14 @@ object SpekUtils {
             return isSpec(container)
         }
         return false
+    }
+
+    fun getContainingSpecClass(callExpression: KtCallExpression): KtLightClass? {
+        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClass::class.java)
+        if (container != null && isSpec(container)) {
+            return container.toLightClass()
+        }
+        return null
     }
 
     fun isDslExtension(function: KtNamedFunction): Boolean {

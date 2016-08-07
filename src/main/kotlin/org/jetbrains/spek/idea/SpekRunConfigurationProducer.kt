@@ -6,11 +6,9 @@ import com.intellij.execution.junit.JavaRunConfigurationProducerBase
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.asJava.toLightClass
-import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
-import org.jetbrains.kotlin.psi.KtNamedFunction
 
 /**
  * @author Ranie Jade Ramiso
@@ -32,7 +30,6 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                 configuration.spec = cls.qualifiedName!!
                                 configuration.setModule(context.module)
                                 configuration.setGeneratedName()
-                                context.location
                                 return true
                             }
                         }
@@ -44,7 +41,13 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                 SpekUtils.isSpecBlock(callExpression)
 
                             ) {
-                                return true
+                                val spec = SpekUtils.getContainingSpecClass(callExpression)
+                                if (spec != null) {
+                                    configuration.spec = spec.qualifiedName!!
+                                    configuration.setModule(context.module)
+                                    configuration.setGeneratedName()
+                                    return true
+                                }
                             }
                         }
                     }
