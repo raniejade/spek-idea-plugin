@@ -2,6 +2,7 @@ package org.jetbrains.spek.idea.tooling.execution
 
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.discovery.DiscoverySelectors
+import org.junit.platform.launcher.EngineFilter
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
@@ -13,9 +14,10 @@ import java.io.PrintWriter
 /**
  * @author Ranie Jade Ramiso
  */
-class SpekTestRunner(val spec: String) {
+class SpekTestRunner(val spec: String, val scope: String? = null) {
     fun run() {
         val request = LauncherDiscoveryRequestBuilder.request()
+            .filters(EngineFilter.includeEngines("spek"))
             .selectors(
                 DiscoverySelectors.selectClass(spec)
             )
@@ -24,32 +26,36 @@ class SpekTestRunner(val spec: String) {
         val launcher = LauncherFactory.create()
         launcher.registerTestExecutionListeners(object: TestExecutionListener {
             override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
-                val name = testIdentifier.displayName
-                if (testIdentifier.isContainer) {
-                    out("testSuiteFinished name='$name'")
-                } else {
-                    if (testExecutionResult.status != TestExecutionResult.Status.SUCCESSFUL) {
-                        val throwable = testExecutionResult.throwable.get()
-                        val writer = CharArrayWriter()
-                        throwable.printStackTrace(PrintWriter(writer))
-                        val details = writer.toString()
-                            .replace("\n", "|n")
-                            .replace("\r", "|r")
-
-                        out("testFailed name='$name' message='${throwable.message}' details='$details'")
-
+                if (testIdentifier.parentId.isPresent) {
+                    val name = testIdentifier.displayName
+                    if (testIdentifier.isContainer) {
+                        out("testSuiteFinished name='$name'")
                     } else {
-                        out("testFinished name='$name'")
+                        if (testExecutionResult.status != TestExecutionResult.Status.SUCCESSFUL) {
+                            val throwable = testExecutionResult.throwable.get()
+                            val writer = CharArrayWriter()
+                            throwable.printStackTrace(PrintWriter(writer))
+                            val details = writer.toString()
+                                .replace("\n", "|n")
+                                .replace("\r", "|r")
+
+                            out("testFailed name='$name' message='${throwable.message}' details='$details'")
+
+                        } else {
+                            out("testFinished name='$name'")
+                        }
                     }
                 }
             }
 
             override fun executionStarted(testIdentifier: TestIdentifier) {
-                val name = testIdentifier.displayName
-                if (testIdentifier.isContainer) {
-                    out("testSuiteStarted name='$name'")
-                } else {
-                    out("testStarted name='$name'")
+                if (testIdentifier.parentId.isPresent) {
+                    val name = testIdentifier.displayName
+                    if (testIdentifier.isContainer) {
+                        out("testSuiteStarted name='$name'")
+                    } else {
+                        out("testStarted name='$name'")
+                    }
                 }
             }
 

@@ -13,8 +13,6 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiClassUtil
-import com.intellij.psi.util.PsiUtil
 import com.intellij.ui.EditorTextFieldWithBrowseButton
 import com.intellij.ui.TextFieldWithHistory
 import javax.swing.JPanel
@@ -106,17 +104,18 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
     override fun resetEditorFrom(configuration: SpekRunConfiguration) {
         selectedModule = configuration.configurationModule.module
+        moduleSelector.reset(configuration)
+        commonJavaParameters.reset(configuration)
         selectedSpec = configuration.spec
         selectedScope = configuration.scope
-        moduleSelector.reset(configuration)
     }
 
     override fun applyEditorTo(configuration: SpekRunConfiguration) {
         configuration.setModule(selectedModule)
-        configuration.spec = selectedSpec
-        configuration.scope = selectedScope
         moduleSelector.applyTo(configuration)
         commonJavaParameters.applyTo(configuration)
+        configuration.spec = selectedSpec
+        configuration.scope = selectedScope
     }
 
     override fun createEditor() = panel

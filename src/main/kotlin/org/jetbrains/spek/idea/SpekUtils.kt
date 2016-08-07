@@ -3,7 +3,7 @@ package org.jetbrains.spek.idea
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.asJava.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
-import org.jetbrains.kotlin.idea.refactoring.getLineNumber
+import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * @author Ranie Jade Ramiso
  */
 object SpekUtils {
-    fun isSpec(element: PsiElement): KtLightClass? {
+    fun getSpec(element: PsiElement): KtLightClass? {
         val ktClass = element.getParentOfType<KtClass>(true)
         if (ktClass != null) {
             val cls = ktClass.toLightClass()
@@ -46,5 +46,21 @@ object SpekUtils {
 
         val lambdaExpr = arg.firstChild as KtLambdaExpression
         return lambdaExpr.bodyExpression!!
+    }
+
+    fun isGroup(function: KtNamedFunction): Boolean {
+        return false
+    }
+
+    fun isTest(function: KtNamedFunction): Boolean {
+        return false
+    }
+
+    fun isIdentifier(element: PsiElement): Boolean {
+        val elementType = element.node.elementType
+        if (elementType is KtToken) {
+            return  elementType.toString() == "IDENTIFIER"
+        }
+        return false
     }
 }

@@ -3,7 +3,6 @@
     <name>Spek IDEA</name>
     <version>0.1.0</version>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
-    <depends>org.jetbrains.kotlin</depends>
     <description><![CDATA[
       Enter short description for your plugin here.<br>
       <em>most HTML tags may be used</em>
@@ -23,11 +22,13 @@
     <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
     -->
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="org.jetbrains.spek.idea.SpekRunConfigurationType"/>
         <runConfigurationProducer implementation="org.jetbrains.spek.idea.SpekRunConfigurationProducer"/>
         <implicitUsageProvider implementation="org.jetbrains.spek.idea.SpekImplicitUsageProvider"/>
+        <runLineMarkerContributor language="kotlin" implementationClass="org.jetbrains.spek.idea.SpekLineMarkerProvider"/>
     </extensions>
 
     <actions>

@@ -12,6 +12,6 @@ class SpekImplicitUsageProvider: ImplicitUsageProvider {
     override fun isImplicitRead(element: PsiElement) = false
 
     override fun isImplicitUsage(element: PsiElement): Boolean {
-        return SpekUtils.isSpec(element) != null
+        return SpekUtils.getSpec(element) != null
     }
 }
