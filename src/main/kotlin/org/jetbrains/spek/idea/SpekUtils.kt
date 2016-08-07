@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
+import org.jetbrains.spek.idea.tooling.execution.Scope
 
 /**
  * @author Ranie Jade Ramiso
@@ -82,6 +82,40 @@ object SpekUtils {
             return container.toLightClass()
         }
         return null
+    }
+
+    fun extractScope(callExpression: KtCallExpression): Scope {
+        val lambda = getLambaExpression(callExpression)
+        val parent = lambda.parent
+        val calleeExpression = callExpression.calleeExpression as KtNameReferenceExpression
+        val parameters = callExpression.valueArguments
+        val function = calleeExpression.mainReference.resolve() as KtNamedFunction
+        val stringExpression = parameters.first().children.firstOrNull() as KtStringTemplateExpression
+        val description = stringExpression.text.removeSurrounding("\"")
+        val parentScope = if (parent is KtLambdaArgument) {
+            val parentCallExpression = parent.parent as KtCallExpression
+            extractScope(parentCallExpression) as Scope.Group
+        } else {
+            val container = getContainingSpecClass(callExpression)
+            Scope.Group(null, container!!.getFqName().asString())
+        }
+
+        val fullDesc = "${function.name!!} $description"
+
+        if (isTest(function)) {
+            return Scope.Test(parentScope, fullDesc)
+        }
+
+        return Scope.Group(parentScope, fullDesc)
+
+    }
+
+    /**
+     * Retrieve the lambda expression containing the call expression
+     */
+    fun getLambaExpression(callExpression: KtCallExpression): KtLambdaExpression {
+        // CallExpression -> Block -> FunctionLiteral -> LambdaExpression
+        return callExpression.parent.parent.parent as KtLambdaExpression
     }
 
     fun isDslExtension(function: KtNamedFunction): Boolean {

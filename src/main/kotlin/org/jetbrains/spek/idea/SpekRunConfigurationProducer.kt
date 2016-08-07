@@ -43,7 +43,9 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             ) {
                                 val spec = SpekUtils.getContainingSpecClass(callExpression)
                                 if (spec != null) {
+                                    val scope = SpekUtils.extractScope(callExpression)
                                     configuration.spec = spec.qualifiedName!!
+                                    configuration.scope = scope
                                     configuration.setModule(context.module)
                                     configuration.setGeneratedName()
                                     return true

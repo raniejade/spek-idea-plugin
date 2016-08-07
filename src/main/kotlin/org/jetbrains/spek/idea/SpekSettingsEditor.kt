@@ -3,18 +3,21 @@ package org.jetbrains.spek.idea
 import com.intellij.application.options.ModulesComboBox
 import com.intellij.execution.ui.*
 import com.intellij.ide.util.ClassFilter
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.psi.JavaCodeFragment
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
-import com.intellij.ui.TextFieldWithHistory
+import org.jetbrains.spek.idea.tooling.execution.Scope
 import javax.swing.JPanel
 
 /**
@@ -26,7 +29,7 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
     lateinit var module: LabeledComponent<ModulesComboBox>
     lateinit var jrePathEditor: JrePathEditor
     lateinit var spec: LabeledComponent<EditorTextFieldWithBrowseButton>
-    lateinit var scope: LabeledComponent<TextFieldWithHistory>
+    lateinit var scope: LabeledComponent<TextFieldWithBrowseButton>
 
     lateinit var moduleSelector: ConfigurationModuleSelector
 
@@ -107,7 +110,7 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         moduleSelector.reset(configuration)
         commonJavaParameters.reset(configuration)
         selectedSpec = configuration.spec
-        selectedScope = configuration.scope
+        selectedScope = configuration.scope?.serializedForm() ?: ""
     }
 
     override fun applyEditorTo(configuration: SpekRunConfiguration) {
@@ -115,16 +118,20 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         moduleSelector.applyTo(configuration)
         commonJavaParameters.applyTo(configuration)
         configuration.spec = selectedSpec
-        configuration.scope = selectedScope
+        if (selectedScope.isNotEmpty()) {
+            configuration.scope = Scope.parse(selectedScope)
+        }
     }
 
     override fun createEditor() = panel
 
     private fun createUIComponents() {
         scope = LabeledComponent.create(
-            TextFieldWithHistory(), "Scope", "West"
+            TextFieldWithBrowseButton(),
+            "Scope", "West"
         )
-        scope.isEnabled = false
+
+        scope.component.isEditable = false
 
         spec = LabeledComponent.create(EditorTextFieldWithBrowseButton(
             project,
@@ -132,6 +139,16 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
             JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE,
             PlainTextLanguage.INSTANCE.associatedFileType
         ), "Spec", "West")
+
+        spec.component.childComponent.addDocumentListener(object: DocumentListener {
+            override fun documentChanged(event: DocumentEvent?) {
+                selectedScope = ""
+            }
+
+            override fun beforeDocumentChange(event: DocumentEvent?) {
+            }
+
+        })
 
     }
 }

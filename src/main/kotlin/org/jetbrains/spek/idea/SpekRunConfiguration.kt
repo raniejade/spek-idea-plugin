@@ -11,18 +11,15 @@ import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.util.JavaParametersUtil
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PathUtil
 import org.jdom.Element
-import org.jetbrains.kotlin.asJava.KtLightClassForExplicitDeclaration
+import org.jetbrains.spek.idea.tooling.execution.Scope
 import org.jetbrains.spek.idea.tooling.execution.SpekTestRunner
 import java.util.*
 
@@ -34,7 +31,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
     data class Data(
         var spec: String,
-        var scope: String,
+        var scope: Scope?,
         var alternativeJrePath: String,
         var envs: MutableMap<String, String>,
         var isPassParentEnvs: Boolean,
@@ -56,7 +53,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
     private val data = Data(
         "",
-        "",
+        null,
         "",
         mutableMapOf(),
         false,
@@ -67,29 +64,15 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         false
     )
 
-    private val model = SpekModel()
-
     var spec: String
         get() {
             return data.spec
         }
         set(value) {
             data.spec = value
-            if (value.isNotEmpty()) {
-                val dumbService = DumbService.getInstance(project)
-                ApplicationManager.getApplication().runReadAction {
-                    dumbService.runWhenSmart {
-                        val type = PsiClassType.getTypeByName(value, project, searchScope)
-                            .resolve()
-                        if (type != null) {
-                            model.spec = (type as KtLightClassForExplicitDeclaration).kotlinOrigin
-                        }
-                    }
-                }
-            }
         }
 
-    var scope: String
+    var scope: Scope?
         get() {
             return data.scope
         }
@@ -99,6 +82,9 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
 
     override fun suggestedName(): String {
+        if (scope != null) {
+            return "$spec - ${scope.toString()}"
+        }
         return spec
     }
 
@@ -133,20 +119,18 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
                 val toolingJar = PathUtil.getJarPathForClass(SpekTestRunner::class.java)
 
-//                // TODO: temporary - list directory
-//                val junitLauncherJar = PathUtil.getJarPathForClass(LauncherDiscoveryRequest::class.java)
-//                val junitCommonJar = PathUtil.getJarPathForClass(PreconditionViolationException::class.java)
-//                val junitPlatformJar = PathUtil.getJarPathForClass(TestEngine::class.java)
-//                val openTest4jJar = PathUtil.getJarPathForClass(TestAbortedException::class.java)
-
                 params.classPath.addAll(
-                    mutableListOf(toolingJar/*, openTest4jJar, junitCommonJar, junitPlatformJar, junitLauncherJar*/)
+                    mutableListOf(toolingJar)
                 )
 
                 params.mainClass = MAIN_CLASS
                 setupJavaParameters(params)
 
-                params.programParametersList.add(data.spec)
+                params.programParametersList.add(spec)
+
+                if (data.scope != null) {
+                    params.programParametersList.add(data.scope!!.serializedForm())
+                }
 
                 return params
             }
@@ -178,14 +162,17 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         super.writeExternal(element)
         writeModule(element)
         JDOMExternalizerUtil.writeField(element, "spec", spec)
-        JDOMExternalizerUtil.writeField(element, "scope", scope)
+        JDOMExternalizerUtil.writeField(element, "scope", scope?.serializedForm())
     }
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
         readModule(element)
         spec = JDOMExternalizerUtil.readField(element, "spec", "")
-        scope = JDOMExternalizerUtil.readField(element, "scope", "")
+        val scope = JDOMExternalizerUtil.readField(element, "scope", "")
+        if (!scope.isEmpty()) {
+            this.scope = Scope.parse(scope)
+        }
     }
 
     override fun setAlternativeJrePath(path: String) {

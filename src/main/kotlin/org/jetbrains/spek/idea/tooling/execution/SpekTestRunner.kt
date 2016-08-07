@@ -1,6 +1,9 @@
 package org.jetbrains.spek.idea.tooling.execution
 
+import org.junit.platform.engine.DiscoveryFilter
 import org.junit.platform.engine.TestExecutionResult
+import org.junit.platform.engine.UniqueId
+import org.junit.platform.engine.discovery.ClassFilter
 import org.junit.platform.engine.discovery.DiscoverySelectors
 import org.junit.platform.launcher.EngineFilter
 import org.junit.platform.launcher.TestExecutionListener
@@ -16,14 +19,28 @@ import java.io.PrintWriter
  */
 class SpekTestRunner(val spec: String, val scope: String? = null) {
     fun run() {
-        val request = LauncherDiscoveryRequestBuilder.request()
-            .filters(EngineFilter.includeEngines("spek"))
-            .selectors(
-                DiscoverySelectors.selectClass(spec)
-            )
+        val builder = LauncherDiscoveryRequestBuilder.request()
+            .filters(EngineFilter.includeEngines(SPEK))
+
+        if (scope != null) {
+            var root = UniqueId.forEngine(SPEK)
+            UniqueId.parse(scope).segments.forEach {
+                root = root.append(it.type, it.value)
+            }
+            builder.selectors(DiscoverySelectors.selectUniqueId(root))
+        }
+
+        val request = builder
+            .selectors(DiscoverySelectors.selectClass(spec))
             .build()
 
         val launcher = LauncherFactory.create()
+
+        launcher.discover(request)
+            .countTestIdentifiers {
+                println(it.uniqueId)
+                true
+            }
         launcher.registerTestExecutionListeners(object: TestExecutionListener {
             override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
                 if (testIdentifier.parentId.isPresent) {
@@ -75,5 +92,9 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
 
     private fun out(event: String) {
         println("##teamcity[$event]")
+    }
+
+    companion object {
+        const val SPEK = "spek"
     }
 }
