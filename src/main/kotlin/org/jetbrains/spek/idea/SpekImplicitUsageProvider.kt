@@ -2,6 +2,7 @@ package org.jetbrains.spek.idea
 
 import com.intellij.codeInsight.daemon.ImplicitUsageProvider
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.asJava.KtLightClassForExplicitDeclaration
 
 /**
  * @author Ranie Jade Ramiso
@@ -12,6 +13,9 @@ class SpekImplicitUsageProvider: ImplicitUsageProvider {
     override fun isImplicitRead(element: PsiElement) = false
 
     override fun isImplicitUsage(element: PsiElement): Boolean {
-        return SpekUtils.getSpec(element) != null
+        if (element is KtLightClassForExplicitDeclaration) {
+            return SpekUtils.isSpec(element)
+        }
+        return false
     }
 }

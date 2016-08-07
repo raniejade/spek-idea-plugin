@@ -73,18 +73,6 @@ object SpekUtils {
         return false
     }
 
-    fun getSpecBody(ktClass: KtClassOrObject): KtBlockExpression {
-        val constructorCall = ktClass.getSuperTypeListEntries()
-            .filterIsInstance<KtSuperTypeCallEntry>()
-            .first()
-
-        val arg =  constructorCall.valueArguments
-            .first() as KtValueArgument
-
-        val lambdaExpr = arg.firstChild as KtLambdaExpression
-        return lambdaExpr.bodyExpression!!
-    }
-
     fun isGroup(function: KtNamedFunction): Boolean {
         return GROUP_FN.contains(function.name)
     }
