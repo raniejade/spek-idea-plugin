@@ -16,7 +16,7 @@ apply plugin: "idea"
 apply plugin: "kotlin"
 
 
-version = '0.4.0'
+version = '0.1.0'
 
 
 repositories {
@@ -34,7 +34,7 @@ dependencies {
 
 intellij {
     version = '2016.2'
-    plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103', 'junit', 'cucumber-java:145.597']
+    plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
 }
 

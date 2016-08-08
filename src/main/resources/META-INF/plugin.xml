@@ -1,16 +1,16 @@
 <idea-plugin version="2">
     <id>org.jetbrains.spek.spek-idea-plugin</id>
-    <name>Spek IDEA</name>
+    <name>Spek</name>
     <version>0.1.0</version>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
     <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      IntelliJ IDEA plugin for <a href="http://jetbrains.github.io/spek/">Spek</a>.
     ]]></description>
 
     <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      <ul>
+        <li>Add support for running a particular group/test in a spec.</li>
+      </ul>
     ]]>
     </change-notes>
 

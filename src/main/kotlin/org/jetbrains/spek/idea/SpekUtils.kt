@@ -127,9 +127,12 @@ object SpekUtils {
     }
 
     fun isIdentifier(element: PsiElement): Boolean {
-        val elementType = element.node.elementType
-        if (elementType is KtToken) {
-            return  elementType.toString() == "IDENTIFIER"
+        val node = element.node
+        if (node != null) {
+            val elementType = node.elementType
+            if (elementType is KtToken) {
+                return elementType.toString() == "IDENTIFIER"
+            }
         }
         return false
     }
