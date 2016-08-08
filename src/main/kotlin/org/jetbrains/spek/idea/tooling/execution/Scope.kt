@@ -24,6 +24,22 @@ sealed class Scope(val description: String) {
 
     override fun toString() = description
 
+    override fun equals(other: Any?): Boolean{
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Scope
+
+        if (serializedForm() != other.serializedForm()) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int{
+        return serializedForm().hashCode()
+    }
+
+
     companion object {
         private fun format(scope: Scope): String {
             if (scope is Scope.Group) {
