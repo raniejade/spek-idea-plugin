@@ -1,4 +1,5 @@
-# IntelliJ IDEA plugin for Spek
+# Spek IntelliJ IDEA Plugin
+This is the official IntelliJ IDEA plugin for [Spek](https://github.com/JetBrains/spek).
 
 ## Features
 - Run specs directly from IDEA.

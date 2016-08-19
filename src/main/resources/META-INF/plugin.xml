@@ -4,7 +4,7 @@
     <version>0.1.0</version>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
     <description><![CDATA[
-      IntelliJ IDEA plugin for <a href="http://jetbrains.github.io/spek/">Spek</a>.
+      Official IntelliJ IDEA plugin for <a href="http://jetbrains.github.io/spek/">Spek</a>.
     ]]></description>
 
     <change-notes><![CDATA[
