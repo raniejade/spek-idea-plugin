@@ -36,11 +36,6 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
 
         val launcher = LauncherFactory.create()
 
-        launcher.discover(request)
-            .countTestIdentifiers {
-                println(it.uniqueId)
-                true
-            }
         launcher.registerTestExecutionListeners(object: TestExecutionListener {
             override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
                 if (testIdentifier.parentId.isPresent) {
