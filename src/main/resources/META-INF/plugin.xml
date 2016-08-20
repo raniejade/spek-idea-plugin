@@ -8,7 +8,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add support for running a particular group/test in a spec.</li>
+        <li>Add support for IntelliJ IDEA 2016.x</li>
       </ul>
     ]]>
     </change-notes>
