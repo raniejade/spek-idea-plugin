@@ -5,19 +5,22 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "gradle.plugin.com.zoltu.gradle.plugin:git-versioning:2.0.21"
     }
 }
 
 plugins {
     id 'org.jetbrains.intellij' version '0.1.10'
+    id "com.zoltu.git-versioning" version "2.0.21"
 }
 
 apply plugin: "idea"
 apply plugin: "kotlin"
 
-
-version = '0.1.0'
-
+int index = version.lastIndexOf("-0")
+if (index != -1) {
+    version = version.substring(0, index)
+}
 
 repositories {
     mavenCentral()
@@ -33,7 +36,9 @@ dependencies {
 }
 
 intellij {
-    version = '2016.2'
+    version = '2016.1'
+    type = 'IC'
+    updateSinceUntilBuild = false
     plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
 }

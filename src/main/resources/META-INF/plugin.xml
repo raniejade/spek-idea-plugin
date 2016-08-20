@@ -1,7 +1,6 @@
 <idea-plugin version="2">
     <id>org.jetbrains.spek.spek-idea-plugin</id>
     <name>Spek</name>
-    <version>0.1.0</version>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
     <description><![CDATA[
       Official IntelliJ IDEA plugin for <a href="http://jetbrains.github.io/spek/">Spek</a>.
