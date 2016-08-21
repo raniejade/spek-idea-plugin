@@ -11,6 +11,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
 import org.junit.platform.launcher.core.LauncherFactory
 import java.io.CharArrayWriter
 import java.io.PrintWriter
+import java.util.*
 
 /**
  * @author Ranie Jade Ramiso
@@ -34,6 +35,8 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
 
         val launcher = LauncherFactory.create()
 
+        val durationMap = HashMap<String, Long>()
+
         launcher.registerTestExecutionListeners(object: TestExecutionListener {
             override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
                 if (testIdentifier.parentId.isPresent) {
@@ -41,6 +44,7 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
                     if (testIdentifier.isContainer) {
                         out("testSuiteFinished name='$name'")
                     } else {
+                        val duration = System.currentTimeMillis() - durationMap[testIdentifier.uniqueId]!!
                         if (testExecutionResult.status != TestExecutionResult.Status.SUCCESSFUL) {
                             val throwable = testExecutionResult.throwable.get()
                             val writer = CharArrayWriter()
@@ -50,10 +54,10 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
 
                             val message = throwable.message?.toTcSafeString()
 
-                            out("testFailed name='$name' message='$message' details='$details'")
+                            out("testFailed name='$name' duration='$duration' message='$message' details='$details'")
 
                         } else {
-                            out("testFinished name='$name'")
+                            out("testFinished name='$name' duration='$duration'")
                         }
                     }
                 }
@@ -65,6 +69,7 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
                     if (testIdentifier.isContainer) {
                         out("testSuiteStarted name='$name'")
                     } else {
+                        durationMap.put(testIdentifier.uniqueId, System.currentTimeMillis())
                         out("testStarted name='$name'")
                     }
                 }
