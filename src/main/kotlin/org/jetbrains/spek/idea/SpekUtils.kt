@@ -15,12 +15,12 @@ object SpekUtils {
     private val GROUP_FN = arrayOf(
         "describe",
         "context",
-        "given"
+        "given",
+        "on"
     )
 
     private val TEST_FN = arrayOf(
-        "it",
-        "on"
+        "it"
     )
 
     fun isSpec(cls: KtLightClass): Boolean {
