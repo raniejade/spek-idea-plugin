@@ -1,9 +1,7 @@
 package org.jetbrains.spek.idea.tooling.execution
 
-import org.junit.platform.engine.DiscoveryFilter
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.UniqueId
-import org.junit.platform.engine.discovery.ClassFilter
 import org.junit.platform.engine.discovery.DiscoverySelectors
 import org.junit.platform.launcher.EngineFilter
 import org.junit.platform.launcher.TestExecutionListener
@@ -48,10 +46,11 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
                             val writer = CharArrayWriter()
                             throwable.printStackTrace(PrintWriter(writer))
                             val details = writer.toString()
-                                .replace("\n", "|n")
-                                .replace("\r", "|r")
+                                .toTcSafeString()
 
-                            out("testFailed name='$name' message='${throwable.message}' details='$details'")
+                            val message = throwable.message?.toTcSafeString()
+
+                            out("testFailed name='$name' message='$message' details='$details'")
 
                         } else {
                             out("testFinished name='$name'")
@@ -83,6 +82,11 @@ class SpekTestRunner(val spec: String, val scope: String? = null) {
         })
 
         launcher.execute(request)
+    }
+
+    private fun String.toTcSafeString(): String {
+        return this.replace("\n", "|n")
+            .replace("\r", "|r")
     }
 
     private fun out(event: String) {
