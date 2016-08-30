@@ -9,6 +9,7 @@ buildscript {
     }
 }
 
+
 plugins {
     id 'org.jetbrains.intellij' version '0.1.10'
     id "com.zoltu.git-versioning" version "2.0.21"
@@ -16,6 +17,10 @@ plugins {
 
 apply plugin: "idea"
 apply plugin: "kotlin"
+
+configurations {
+    spek
+}
 
 int index = version.lastIndexOf("-0")
 if (index != -1) {
@@ -25,14 +30,18 @@ if (index != -1) {
 repositories {
     mavenCentral()
     maven {
-        url 'https://jetbrains.jfrog.io/jetbrains/spek-snapshots'
+        url 'https://jetbrains.jfrog.io/jetbrains/spek-snapshots/'
     }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+    // fixme should be compileOnly
     compile 'org.junit.platform:junit-platform-launcher:1.0.0-M2'
+
+    spek "org.jetbrains.spek:spek-junit-platform-engine:1.0.0-SNAPSHOT"
+    spek 'org.junit.platform:junit-platform-launcher:1.0.0-M2'
 }
 
 intellij {
@@ -41,6 +50,12 @@ intellij {
     updateSinceUntilBuild = false
     plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
+}
+
+processResources {
+    from(configurations.spek) {
+        into "runtime"
+    }
 }
 
 task wrapper(type: Wrapper) {

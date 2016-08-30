@@ -118,9 +118,10 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                 }
 
                 val toolingJar = PathUtil.getJarPathForClass(SpekTestRunner::class.java)
+                val runtime = SpekUtils.javaClass.classLoader.getResource("/runtime").toExternalForm()
 
                 params.classPath.addAll(
-                    mutableListOf(toolingJar)
+                    mutableListOf(toolingJar, "$runtime/*")
                 )
 
                 params.mainClass = MAIN_CLASS
