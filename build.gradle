@@ -26,6 +26,7 @@ subprojects {
     version = actualVersion
 
     repositories {
+        jcenter()
         mavenCentral()
         maven {
             url 'https://jetbrains.jfrog.io/jetbrains/spek-snapshots/'

@@ -15,10 +15,14 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
+import com.intellij.openapi.roots.ui.configuration.PathUIUtils
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.PathUtil
 import org.jdom.Element
 import org.jetbrains.spek.tooling.execution.Scope
+import org.jetbrains.spek.tooling.execution.SpekTestRunner
+import java.nio.file.Paths
 import java.util.*
 
 /**
@@ -115,10 +119,11 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     )
                 }
 
-                val tooling = SpekUtils.javaClass.classLoader.getResource("/tooling").toExternalForm()
+                val jars = Paths.get(PathUtil.getJarPathForClass(SpekTestRunner::class.java))
+                    .parent
 
                 params.classPath.addAll(
-                    mutableListOf("$tooling/*")
+                    mutableListOf("${jars.toString()}/*")
                 )
 
                 params.mainClass = MAIN_CLASS
