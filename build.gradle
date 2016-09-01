@@ -46,9 +46,11 @@ dependencies {
 
 intellij {
     version = '143.1821.5'
+    // version = '2016.1'
     type = 'IC'
     updateSinceUntilBuild = false
     plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ143-105']
+    // plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
 }
 

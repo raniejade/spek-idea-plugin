@@ -9,6 +9,8 @@
     <change-notes><![CDATA[
       <ul>
         <li>Add duration metadata.</li>
+        <li>Embed required dependencies</li>
+        <li>Add support for IntelliJ IDEA 15 (build 143.0)</li>
       </ul>
     ]]>
     </change-notes>
