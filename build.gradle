@@ -6,17 +6,13 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "gradle.plugin.com.zoltu.gradle.plugin:git-versioning:2.0.21"
+        classpath "gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.1.10"
     }
 }
 
 
 plugins {
     id "com.zoltu.git-versioning" version "2.0.21"
-}
-
-
-configurations {
-    spek
 }
 
 int index = version.lastIndexOf("-0")
