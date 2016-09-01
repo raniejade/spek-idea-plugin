@@ -45,10 +45,10 @@ dependencies {
 }
 
 intellij {
-    version = '2016.1'
+    version = '143.1821.5'
     type = 'IC'
     updateSinceUntilBuild = false
-    plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
+    plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ143-105']
     downloadSources = true
 }
 
