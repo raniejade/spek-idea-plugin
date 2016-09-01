@@ -1,0 +1,11 @@
+apply plugin: "idea"
+apply plugin: "kotlin"
+
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+
+    compile "org.jetbrains.spek:spek-junit-platform-engine:1.0.0-SNAPSHOT"
+    compile 'org.junit.platform:junit-platform-launcher:1.0.0-M2'
+}

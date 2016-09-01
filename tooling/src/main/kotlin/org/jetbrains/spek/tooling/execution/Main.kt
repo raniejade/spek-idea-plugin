@@ -1,4 +1,4 @@
-package org.jetbrains.spek.idea.tooling.execution
+package org.jetbrains.spek.tooling.execution
 
 /**
  * 1st argument - spec to run

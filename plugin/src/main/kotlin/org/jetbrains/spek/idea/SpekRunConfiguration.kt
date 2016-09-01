@@ -17,10 +17,8 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.PathUtil
 import org.jdom.Element
-import org.jetbrains.spek.idea.tooling.execution.Scope
-import org.jetbrains.spek.idea.tooling.execution.SpekTestRunner
+import org.jetbrains.spek.tooling.execution.Scope
 import java.util.*
 
 /**
@@ -117,11 +115,10 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     )
                 }
 
-                val toolingJar = PathUtil.getJarPathForClass(SpekTestRunner::class.java)
-                val runtime = SpekUtils.javaClass.classLoader.getResource("/runtime").toExternalForm()
+                val tooling = SpekUtils.javaClass.classLoader.getResource("/tooling").toExternalForm()
 
                 params.classPath.addAll(
-                    mutableListOf(toolingJar, "$runtime/*")
+                    mutableListOf("$tooling/*")
                 )
 
                 params.mainClass = MAIN_CLASS
@@ -225,6 +222,6 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     }
 
     companion object {
-        val MAIN_CLASS = "org.jetbrains.spek.idea.tooling.execution.MainKt"
+        val MAIN_CLASS = "org.jetbrains.spek.tooling.execution.MainKt"
     }
 }

@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.spek.idea.tooling.execution.Scope
+import org.jetbrains.spek.tooling.execution.Scope
 
 /**
  * @author Ranie Jade Ramiso

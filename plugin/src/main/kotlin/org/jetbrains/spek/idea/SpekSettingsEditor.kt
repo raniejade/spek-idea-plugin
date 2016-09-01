@@ -17,7 +17,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
-import org.jetbrains.spek.idea.tooling.execution.Scope
+import org.jetbrains.spek.tooling.execution.Scope
 import javax.swing.JPanel
 
 /**
