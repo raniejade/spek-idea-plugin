@@ -15,7 +15,6 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
-import com.intellij.openapi.roots.ui.configuration.PathUIUtils
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PathUtil
