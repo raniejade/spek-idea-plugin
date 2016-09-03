@@ -5,10 +5,10 @@ import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 import com.intellij.util.Function
-import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtStubbedPsiUtil
 
 /**
  * @author Ranie Jade Ramiso
@@ -22,8 +22,7 @@ class SpekLineMarkerProvider: RunLineMarkerContributor() {
             if (parent != null) {
                 when (parent) {
                     is KtClass -> {
-                        val lightClass = parent.toLightClass()
-                        if (lightClass != null && SpekUtils.isSpec(lightClass)) {
+                        if (SpekUtils.isSpec(parent) && !SpekUtils.isJUnit4(parent)) {
                             return Info(
                                 AllIcons.RunConfigurations.TestState.Run,
                                 TOOLTIP_PROVIDER,
@@ -33,10 +32,13 @@ class SpekLineMarkerProvider: RunLineMarkerContributor() {
                     }
                     is KtNameReferenceExpression -> {
                         val callExpression = parent.parent
-                        if (callExpression != null &&
-                            callExpression is KtCallExpression &&
-                            SpekUtils.isContainedInSpec(callExpression) &&
-                            SpekUtils.isSpecBlock(callExpression)
+                        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClass::class.java)
+                        if (callExpression != null
+                            && callExpression is KtCallExpression
+                            && container != null
+                            && SpekUtils.isSpec(container)
+                            && SpekUtils.isSpecBlock(callExpression)
+                            && !SpekUtils.isJUnit4(container)
 
                         ) {
                             return Info(

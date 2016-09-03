@@ -3,6 +3,7 @@ package org.jetbrains.spek.idea
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.asJava.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
+import org.jetbrains.kotlin.idea.refactoring.fqName.getKotlinFqName
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.psi.*
@@ -58,6 +59,20 @@ object SpekUtils {
             return isSpec(lcls)
         }
         return false
+    }
+
+    fun isJUnit4(cls: KtClass): Boolean {
+        val annotation = cls.annotationEntries.find {
+            val typeReference = it.typeReference?.typeElement
+            if (typeReference != null) {
+                "org.junit.runner.RunWith" == (typeReference as KtUserType).referenceExpression!!
+                    .mainReference.resolve()!!.getKotlinFqName()!!.asString()
+            } else {
+                false
+            }
+
+        }
+        return annotation != null
     }
 
     fun isGroup(function: KtNamedFunction): Boolean {
