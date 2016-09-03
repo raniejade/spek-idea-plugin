@@ -15,3 +15,5 @@ This is the official IntelliJ IDEA plugin for [Spek](https://github.com/JetBrain
 
 ## Known Limitations
 - If your class is annotated with `@RunWith(...)` the junit plugin will take over and this plugin will not work.
+- For Android Studio, you need to add a `Before launch` gradle step to compile your test classes. If you have the default
+setup, adding `assembleDebugUnitTest` should suffice.
