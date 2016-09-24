@@ -14,7 +14,7 @@ intellij {
 //     version = '2016.1'
     type = 'IC'
     updateSinceUntilBuild = false
-    plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ143-105']
+    plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115']
 //     plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
 }

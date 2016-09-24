@@ -9,6 +9,7 @@
     <change-notes><![CDATA[
       <ul>
         <li>Disable gutter icons when <b>@RunWith(...)</b> is present to avoid confusion.</li>
+        <li>Update to Kotlin 1.0.4</li>
       </ul>
     ]]>
     </change-notes>

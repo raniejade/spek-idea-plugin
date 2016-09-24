@@ -1,7 +1,7 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.asJava.KtLightClass
+import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.idea.refactoring.fqName.getKotlinFqName
 import org.jetbrains.kotlin.idea.references.mainReference
@@ -112,7 +112,7 @@ object SpekUtils {
             extractScope(parentCallExpression) as Scope.Group
         } else {
             val container = getContainingSpecClass(callExpression)
-            Scope.Group(null, container!!.getFqName().asString())
+            Scope.Group(null, container!!.qualifiedName!!)
         }
 
         val fullDesc = "${function.name!!} $description"
