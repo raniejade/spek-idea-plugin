@@ -8,13 +8,22 @@ dependencies {
     compile project(':tooling')
 }
 
+def profiles = [
+    'idea2016': { intellij ->
+        intellij.version = '2016.1'
+        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ2016.1-112']
+    },
+    'idea15': { intellij ->
+        intellij.version = '143.1821.5'
+        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115']
+    }
+]
+
+String profile = findProperty("profile") ?: profiles.keySet().first()
+
 intellij {
+    profiles[profile].call(delegate)
     pluginName = 'spek-idea-plugin'
-    version = '143.1821.5'
-//     version = '2016.1'
-    type = 'IC'
     updateSinceUntilBuild = false
-    plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115']
-//     plugins = ['org.jetbrains.kotlin:1.0.3-release-IJ2016.1-103']
     downloadSources = true
 }
