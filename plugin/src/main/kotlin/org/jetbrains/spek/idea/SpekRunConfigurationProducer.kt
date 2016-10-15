@@ -28,10 +28,12 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                         is KtClass -> {
                             val cls = parent.toLightClass()
                             if (cls != null && SpekUtils.isSpec(cls)) {
-                                configuration.spec = cls.qualifiedName!!
-                                configuration.setModule(context.module)
-                                configuration.setGeneratedName()
-                                return true
+                                if (cls.qualifiedName != null) {
+                                    configuration.spec = cls.qualifiedName!!
+                                    configuration.setModule(context.module)
+                                    configuration.setGeneratedName()
+                                    return true
+                                }
                             }
                         }
                         is KtNameReferenceExpression -> {
