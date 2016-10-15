@@ -8,8 +8,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Disable gutter icons when <b>@RunWith(...)</b> is present to avoid confusion.</li>
-        <li>Update to Kotlin 1.0.4</li>
+        <li>Fix NPE when qualified name is not available.</li>
+        <li>Add module dependency <em>com.intellij.modules.java</em></li>
       </ul>
     ]]>
     </change-notes>
@@ -23,6 +23,7 @@
     <depends>com.intellij.modules.lang</depends>
     -->
     <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="org.jetbrains.spek.idea.SpekRunConfigurationType"/>
