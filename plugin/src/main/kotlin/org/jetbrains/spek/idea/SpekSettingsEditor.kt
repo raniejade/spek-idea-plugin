@@ -1,7 +1,11 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.application.options.ModulesComboBox
-import com.intellij.execution.ui.*
+import com.intellij.execution.ui.ClassBrowser
+import com.intellij.execution.ui.CommonJavaParametersPanel
+import com.intellij.execution.ui.ConfigurationModuleSelector
+import com.intellij.execution.ui.DefaultJreSelector
+import com.intellij.execution.ui.JrePathEditor
 import com.intellij.ide.util.ClassFilter
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -17,7 +21,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
-import org.jetbrains.spek.tooling.execution.Scope
+import org.jetbrains.spek.tooling.Scope
 import javax.swing.JPanel
 
 /**

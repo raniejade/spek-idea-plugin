@@ -1,6 +1,6 @@
-package org.jetbrains.spek.tooling.execution
+package org.jetbrains.spek.tooling
 
-import java.util.*
+import java.util.LinkedList
 
 /**
  * @author Ranie Jade Ramiso
@@ -20,7 +20,7 @@ sealed class Scope(val description: String) {
 
     class Test(val parent: Group, description: String): Scope(description)
 
-    fun serializedForm() = Companion.serializedForm(this)
+    fun serializedForm() = serializedForm(this)
 
     override fun toString() = description
 
@@ -42,7 +42,7 @@ sealed class Scope(val description: String) {
 
     companion object {
         private fun format(scope: Scope): String {
-            if (scope is Scope.Group) {
+            if (scope is Group) {
                 val type = if (scope.parent == null) {
                     "spec"
                 } else {
@@ -54,28 +54,28 @@ sealed class Scope(val description: String) {
         }
 
         private fun serializedForm(scope: Scope): String {
-            if (scope is Scope.Group) {
+            if (scope is Group) {
                 if (scope.parent != null) {
                     return "${serializedForm(scope.parent)}/${format(scope)}"
                 }
                 return format(scope)
             }
-            return "${serializedForm((scope as Scope.Test).parent)}/${format(scope)}"
+            return "${serializedForm((scope as Test).parent)}/${format(scope)}"
         }
 
         fun parse(scope: String): Scope {
             val split = scope.split("/")
 
-            var parentScope: Scope.Group? = null
+            var parentScope: Group? = null
             return split.map {
                 val typeAndDesc = it.removeSurrounding("[", "]").split(":")
                 val type = typeAndDesc[0]
                 val desc = typeAndDesc[1]
 
                 if (type == "test") {
-                    Scope.Test(parentScope!!, desc)
+                    Test(parentScope!!, desc)
                 } else {
-                    val group = Scope.Group(parentScope, desc)
+                    val group = Group(parentScope, desc)
                     parentScope = group
                     group
                 }

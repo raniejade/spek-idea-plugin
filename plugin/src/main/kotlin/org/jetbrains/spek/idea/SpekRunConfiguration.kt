@@ -1,9 +1,17 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.diagnostic.logging.LogConfigurationPanel
-import com.intellij.execution.*
+import com.intellij.execution.CommonJavaRunConfigurationParameters
+import com.intellij.execution.DefaultExecutionResult
+import com.intellij.execution.ExecutionResult
+import com.intellij.execution.Executor
+import com.intellij.execution.JavaRunConfigurationExtensionManager
 import com.intellij.execution.application.BaseJavaApplicationCommandLineState
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.execution.configurations.JavaParameters
+import com.intellij.execution.configurations.JavaRunConfigurationModule
+import com.intellij.execution.configurations.ModuleBasedConfiguration
+import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
@@ -19,10 +27,9 @@ import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PathUtil
 import org.jdom.Element
-import org.jetbrains.spek.tooling.execution.Scope
-import org.jetbrains.spek.tooling.execution.SpekTestRunner
+import org.jetbrains.spek.tooling.Scope
 import java.nio.file.Paths
-import java.util.*
+import java.util.Arrays
 
 /**
  * @author Ranie Jade Ramiso
@@ -118,11 +125,11 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     )
                 }
 
-                val jars = Paths.get(PathUtil.getJarPathForClass(SpekTestRunner::class.java))
+                val jars = Paths.get(PathUtil.getJarPathForClass(Scope::class.java))
                     .parent
 
                 params.classPath.addAll(
-                    mutableListOf("${jars.toString()}/*")
+                    mutableListOf("$jars/*")
                 )
 
                 params.mainClass = MAIN_CLASS
@@ -226,6 +233,6 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     }
 
     companion object {
-        val MAIN_CLASS = "org.jetbrains.spek.tooling.execution.MainKt"
+        val MAIN_CLASS = "org.jetbrains.spek.tooling.sm.MainKt"
     }
 }

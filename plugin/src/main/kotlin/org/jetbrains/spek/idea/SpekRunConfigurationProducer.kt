@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
-import org.jetbrains.spek.tooling.execution.Scope
+import org.jetbrains.spek.tooling.Scope
 
 /**
  * @author Ranie Jade Ramiso
