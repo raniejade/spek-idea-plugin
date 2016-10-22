@@ -73,8 +73,17 @@ object SpekUtils {
         val annotation = cls.annotationEntries.find {
             val typeReference = it.typeReference?.typeElement
             if (typeReference != null) {
-                "org.junit.runner.RunWith" == (typeReference as KtUserType).referenceExpression!!
-                    .mainReference.resolve()!!.getKotlinFqName()!!.asString()
+                val referenceExpression = (typeReference as KtUserType).referenceExpression
+                if (referenceExpression != null) {
+                    val mainReference = referenceExpression.mainReference.resolve()
+                    if (mainReference != null) {
+                        val fqName = mainReference.getKotlinFqName()
+                        if (fqName != null) {
+                            "org.junit.runner.RunWith" == fqName.asString()
+                        }
+                    }
+                }
+                false
             } else {
                 false
             }
