@@ -50,11 +50,6 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         var isAlternativeJrePathEnabled: Boolean
     )
 
-    private val searchScope: GlobalSearchScope
-        get() {
-            return configurationModule.searchScope
-        }
-
     override fun getValidModules(): MutableCollection<Module> {
         return Arrays.asList(*ModuleManager.getInstance(project).modules)
     }
