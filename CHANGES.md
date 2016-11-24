@@ -1,7 +1,10 @@
 # Change Log
 
 ## Unreleased
-- \#20 Fix compatibility issue with Intellij IDEA 2016.3
+- Properly escape Service Message strings.
+
+## v0.2.6
+- Fix compatibility issue with Intellij IDEA 2016.3
 - More NPE fixes.
 - Decouple runner from JUnit.
 - Add this changelog.

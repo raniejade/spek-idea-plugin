@@ -22,7 +22,7 @@ fun main(vararg args: String) {
 
     runner.addListener(object: TestExecutionListener() {
         override fun executionFinished(test: TestIdentifier, result: TestExecutionResult) {
-            val name = test.displayName
+            val name = test.displayName.toTcSafeString()
             if (test.container) {
                 out("testSuiteFinished name='$name'")
             } else {
@@ -45,7 +45,7 @@ fun main(vararg args: String) {
         }
 
         override fun executionStarted(testIdentifier: TestIdentifier) {
-            val name = testIdentifier.displayName
+            val name = testIdentifier.displayName.toTcSafeString()
             if (testIdentifier.container) {
                 out("testSuiteStarted name='$name'")
             } else {
@@ -54,7 +54,7 @@ fun main(vararg args: String) {
         }
 
         override fun executionSkipped(testIdentifier: TestIdentifier, reason: String) {
-            val name = testIdentifier.displayName
+            val name = testIdentifier.displayName.toTcSafeString()
             out("testIgnored name='$name' ignoreComment='$reason'")
             out("testFinished name='$name'")
         }
@@ -64,8 +64,15 @@ fun main(vararg args: String) {
 }
 
 private fun String.toTcSafeString(): String {
-    return this.replace("\n", "|n")
+    return this.replace("|", "||")
+        .replace("\n", "|n")
         .replace("\r", "|r")
+        .replace("'", "|'")
+        .replace("[", "|[")
+        .replace("]", "|]")
+        .replace(Regex("""\\u(\d\d\d\d)""")) {
+            "|0x${it.groupValues[1]}"
+        }
 }
 
 private fun out(event: String) {
