@@ -10,6 +10,7 @@
       <ul>
         <li>Fix NPE when qualified name is not available.</li>
         <li>Add module dependency <em>com.intellij.modules.java</em></li>
+        <li>Removed dead code that's colliding with new code in IntelliJ 2016.3</li>
       </ul>
     ]]>
     </change-notes>
