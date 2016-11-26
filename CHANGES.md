@@ -3,6 +3,7 @@
 ## Unreleased
 - Properly escape Service Message strings.
 - Code restructuring.
+- Run test support when right test class file in the project tree view.
 
 ## v0.2.6
 - Fix compatibility issue with Intellij IDEA 2016.3

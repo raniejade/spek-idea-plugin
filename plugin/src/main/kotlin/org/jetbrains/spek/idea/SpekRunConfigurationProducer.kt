@@ -19,9 +19,22 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
 ) {
     override fun setupConfigurationFromContext(configuration: SpekRunConfiguration, context: ConfigurationContext,
                                                sourceElement: Ref<PsiElement>): Boolean {
+        var configurationSet = false
         if (!sourceElement.isNull) {
             val element = sourceElement.get()!!
-            if (SpekUtils.isIdentifier(element)) {
+            if (element is KtClass) {
+                // when clicking on the class file in the project view
+                val cls = element.toLightClass()
+                if (cls != null && SpekUtils.isSpec(cls)) {
+                    if (cls.qualifiedName != null) {
+                        configuration.spec = cls.qualifiedName!!
+                        configuration.setModule(context.module)
+                        configuration.setGeneratedName()
+                        configurationSet = true
+                    }
+                }
+            } else if (SpekUtils.isIdentifier(element)) {
+                // when clicking on the source editor
                 val parent = element.parent
                 if (parent != null) {
                     when (parent) {
@@ -32,7 +45,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                     configuration.spec = cls.qualifiedName!!
                                     configuration.setModule(context.module)
                                     configuration.setGeneratedName()
-                                    return true
+                                    configurationSet = true
                                 }
                             }
                         }
@@ -51,7 +64,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                     configuration.scope = scope
                                     configuration.setModule(context.module)
                                     configuration.setGeneratedName()
-                                    return true
+                                    configurationSet = true
                                 }
                             }
                         }
@@ -59,19 +72,24 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 }
             }
         }
-        return false
+        return configurationSet
     }
 
     override fun isConfigurationFromContext(configuration: SpekRunConfiguration,
                                             context: ConfigurationContext): Boolean {
         val element = context.psiLocation
+        var spec: String? = null
+        var scope: Scope? = null
 
         if (element != null) {
-            if (SpekUtils.isIdentifier(element)) {
+            if (element is KtClass) {
+                val cls = element.toLightClass()
+                if (cls != null && SpekUtils.isSpec(cls)) {
+                    spec = cls.qualifiedName!!
+                }
+            } else if (SpekUtils.isIdentifier(element)) {
                 val parent = element.parent
                 if (parent != null) {
-                    var spec: String? = null
-                    var scope: Scope? = null
                     when (parent) {
                         is KtClass -> {
                             val cls = parent.toLightClass()
@@ -96,12 +114,12 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                         }
                     }
 
-                    return configuration.spec == spec &&
-                        configuration.scope == scope &&
-                        configuration.configurationModule.module == context.module
+
                 }
             }
         }
-        return false
+        return configuration.spec == spec &&
+            configuration.scope == scope &&
+            configuration.configurationModule.module == context.module
     }
 }
