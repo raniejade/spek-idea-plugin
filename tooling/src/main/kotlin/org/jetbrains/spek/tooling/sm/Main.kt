@@ -1,26 +1,62 @@
 package org.jetbrains.spek.tooling.sm
 
+import joptsimple.OptionParser
 import org.jetbrains.spek.tooling.Scope
 import org.jetbrains.spek.tooling.Target
 import org.jetbrains.spek.tooling.adapter.sm.ServiceMessageAdapter
 import org.jetbrains.spek.tooling.runner.junit.JUnitPlatformSpekRunner
 
 /**
- * 1st argument - spec to run
- * 2nd argument (optional) - specific scope to only run
  *
  * @author Ranie Jade Ramiso
  */
 fun main(vararg args: String) {
-    val target = if (args.size == 1) {
-        Target.Spec(args[0])
-    } else {
-        Target.Spec(args[0], Scope.parse(args[1]))
+    OptionParser().apply {
+        val specOption = accepts("spec")
+            .withRequiredArg()
+
+        val scopeOption = accepts("scope")
+            .withRequiredArg()
+
+        val packageOption = accepts("package")
+            .withRequiredArg()
+
+        val adapterOption = accepts("adapter")
+            .withRequiredArg()
+            .defaultsTo("sm")
+
+        val engineOption = accepts("engine")
+            .withRequiredArg()
+            .defaultsTo("junit-platform")
+
+        val options = parse(*args)
+
+        val target = if (options.has(specOption)) {
+            val scope = if (options.has(scopeOption)) {
+                Scope.parse(options.valueOf(scopeOption))
+            } else {
+                null
+            }
+
+            Target.Spec(options.valueOf(specOption), scope)
+        } else if (options.has(packageOption)) {
+            Target.Package(options.valueOf(packageOption))
+        } else {
+            throw IllegalArgumentException("Must provide at least spec or package argument.")
+        }
+
+        val runner = when(options.valueOf(engineOption)) {
+            "junit-platform" -> JUnitPlatformSpekRunner(target)
+            else -> throw IllegalArgumentException("Unsupported engine.")
+        }
+
+        val adapter = when(options.valueOf(adapterOption)) {
+            "sm" -> ServiceMessageAdapter()
+            else -> throw IllegalArgumentException("Unsupported adapter.")
+        }
+
+        runner.addListener(adapter)
+
+        runner.run()
     }
-
-    val runner = JUnitPlatformSpekRunner(target)
-
-    runner.addListener(ServiceMessageAdapter())
-
-    runner.run()
 }

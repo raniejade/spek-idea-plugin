@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Properly escape Service Message strings.
+- Code restructuring.
 
 ## v0.2.6
 - Fix compatibility issue with Intellij IDEA 2016.3

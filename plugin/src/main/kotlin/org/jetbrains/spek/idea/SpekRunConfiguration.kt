@@ -24,7 +24,6 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PathUtil
 import org.jdom.Element
 import org.jetbrains.spek.tooling.Scope
@@ -130,10 +129,10 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                 params.mainClass = MAIN_CLASS
                 setupJavaParameters(params)
 
-                params.programParametersList.add(spec)
+                params.programParametersList.add("--spec", spec)
 
                 if (data.scope != null) {
-                    params.programParametersList.add(data.scope!!.serializedForm())
+                    params.programParametersList.add("--scope", data.scope!!.serializedForm())
                 }
 
                 return params
