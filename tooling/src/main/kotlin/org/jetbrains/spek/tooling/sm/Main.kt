@@ -1,5 +1,7 @@
 package org.jetbrains.spek.tooling.sm
 
+import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Target
 import org.jetbrains.spek.tooling.runner.TestExecutionListener
 import org.jetbrains.spek.tooling.runner.TestExecutionResult
 import org.jetbrains.spek.tooling.runner.TestIdentifier
@@ -14,11 +16,13 @@ import java.io.PrintWriter
  * @author Ranie Jade Ramiso
  */
 fun main(vararg args: String) {
-    val runner = if (args.size == 1) {
-        JUnitPlatformSpekRunner(args[0], null)
+    val target = if (args.size == 1) {
+        Target.Spec(args[0])
     } else {
-        JUnitPlatformSpekRunner(args[0], args[1])
+        Target.Spec(args[0], Scope.parse(args[1]))
     }
+
+    val runner = JUnitPlatformSpekRunner(target)
 
     runner.addListener(object: TestExecutionListener() {
         override fun executionFinished(test: TestIdentifier, result: TestExecutionResult) {

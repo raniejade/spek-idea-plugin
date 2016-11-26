@@ -1,11 +1,12 @@
 package org.jetbrains.spek.tooling.runner
 
+import org.jetbrains.spek.tooling.Target
 import java.util.LinkedList
 
 /**
  * @author Ranie Jade Ramiso
  */
-abstract class SpekRunner {
+abstract class SpekRunner(val target: Target) {
     private val listeners = LinkedList<TestExecutionListener>()
 
     fun addListener(listener: TestExecutionListener) {

@@ -1,5 +1,6 @@
 package org.jetbrains.spek.tooling.runner.junit
 
+import org.jetbrains.spek.tooling.Target
 import org.jetbrains.spek.tooling.runner.SpekRunner
 import org.jetbrains.spek.tooling.runner.TestExecutionResult
 import org.jetbrains.spek.tooling.runner.TestIdentifier
@@ -16,22 +17,28 @@ import org.junit.platform.launcher.TestIdentifier as JUnitTestIdentifier
 /**
  * @author Ranie Jade Ramiso
  */
-class JUnitPlatformSpekRunner(val spec: String, val scope: String?): SpekRunner() {
+class JUnitPlatformSpekRunner(target: Target): SpekRunner(target) {
     override fun run() {
         val builder = LauncherDiscoveryRequestBuilder.request()
             .filters(EngineFilter.includeEngines(SPEK))
 
-        if (scope != null) {
-            var root = UniqueId.forEngine(SPEK)
-            UniqueId.parse(scope).segments.forEach {
-                root = root.append(it.type, it.value)
+        when(target) {
+            is Target.Spec -> {
+                if (target.scope != null) {
+                    val result = UniqueId.parse(target.scope.serializedForm())
+                        .segments.fold(UniqueId.forEngine(SPEK)) { current, segment ->
+                        current.append(segment.type, segment.value)
+                    }
+
+                    builder.selectors(DiscoverySelectors.selectUniqueId(result))
+                }
+
+                builder.selectors(DiscoverySelectors.selectClass(target.spec))
+                    .build()
             }
-            builder.selectors(DiscoverySelectors.selectUniqueId(root))
         }
 
-        val request = builder
-            .selectors(DiscoverySelectors.selectClass(spec))
-            .build()
+        val request = builder.build()
 
         val launcher = LauncherFactory.create()
 
