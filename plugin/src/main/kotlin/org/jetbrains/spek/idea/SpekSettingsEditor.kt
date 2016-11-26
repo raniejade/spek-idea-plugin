@@ -22,6 +22,7 @@ import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
 import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Target
 import javax.swing.JPanel
 
 /**
@@ -113,18 +114,26 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         selectedModule = configuration.configurationModule.module
         moduleSelector.reset(configuration)
         commonJavaParameters.reset(configuration)
-        selectedSpec = configuration.spec
-        selectedScope = configuration.scope?.serializedForm() ?: ""
+
+        val target = configuration.target
+        if (target is Target.Spec) {
+            selectedSpec = target.spec
+            selectedScope = target.scope?.serializedForm() ?: ""
+        }
     }
 
     override fun applyEditorTo(configuration: SpekRunConfiguration) {
         configuration.setModule(selectedModule)
         moduleSelector.applyTo(configuration)
         commonJavaParameters.applyTo(configuration)
-        configuration.spec = selectedSpec
-        if (selectedScope.isNotEmpty()) {
-            configuration.scope = Scope.parse(selectedScope)
+
+        // TODO: check if target is spec
+        val scope = if (selectedScope.isNotEmpty()) {
+            Scope.parse(selectedScope)
+        } else {
+            null
         }
+        configuration.target = Target.Spec(selectedSpec, scope)
     }
 
     override fun createEditor() = panel

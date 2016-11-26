@@ -11,11 +11,11 @@ dependencies {
 def profiles = [
     'idea2016': { intellij ->
         intellij.version = '2016.1'
-        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ2016.1-112']
+        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ2016.1-112', "junit"]
     },
     'idea15': { intellij ->
         intellij.version = '143.1821.5'
-        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115']
+        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115',]
     }
 ]
 

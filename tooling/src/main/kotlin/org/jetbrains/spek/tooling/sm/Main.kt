@@ -45,12 +45,12 @@ fun main(vararg args: String) {
             throw IllegalArgumentException("Must provide at least spec or package argument.")
         }
 
-        val runner = when(options.valueOf(engineOption)) {
+        val runner = when (options.valueOf(engineOption)) {
             "junit-platform" -> JUnitPlatformSpekRunner(target)
             else -> throw IllegalArgumentException("Unsupported engine.")
         }
 
-        val adapter = when(options.valueOf(adapterOption)) {
+        val adapter = when (options.valueOf(adapterOption)) {
             "sm" -> ServiceMessageAdapter()
             else -> throw IllegalArgumentException("Unsupported adapter.")
         }

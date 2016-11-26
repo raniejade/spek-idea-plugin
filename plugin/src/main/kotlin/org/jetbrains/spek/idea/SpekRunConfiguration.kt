@@ -27,6 +27,7 @@ import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.util.PathUtil
 import org.jdom.Element
 import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Target
 import java.nio.file.Paths
 import java.util.Arrays
 
@@ -37,8 +38,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 : ModuleBasedConfiguration<JavaRunConfigurationModule>(name, javaRunConfigurationModule, factory), CommonJavaRunConfigurationParameters {
 
     data class Data(
-        var spec: String,
-        var scope: Scope?,
+        var target: Target,
         var alternativeJrePath: String,
         var envs: MutableMap<String, String>,
         var isPassParentEnvs: Boolean,
@@ -54,8 +54,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     }
 
     private val data = Data(
-        "",
-        null,
+        Target.Spec("", null),
         "",
         mutableMapOf(),
         false,
@@ -66,28 +65,44 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         false
     )
 
-    var spec: String
+    var target: Target
         get() {
-            return data.spec
+            return data.target
         }
         set(value) {
-            data.spec = value
+            data.target = value
         }
 
-    var scope: Scope?
-        get() {
-            return data.scope
-        }
-        set(value) {
-            data.scope = value
-        }
+//    var spec: String
+//        get() {
+//            return data.spec
+//        }
+//        set(value) {
+//            data.spec = value
+//        }
+//
+//    var scope: Scope?
+//        get() {
+//            return data.scope
+//        }
+//        set(value) {
+//            data.scope = value
+//        }
 
 
     override fun suggestedName(): String {
-        if (scope != null) {
-            return "$spec - ${scope.toString()}"
+        val target = data.target
+
+        return when (target) {
+            is Target.Spec -> {
+                if (target.scope != null) {
+                    "${target.spec} - ${target.scope}"
+                } else {
+                    target.spec
+                }
+            }
+            is Target.Package -> target.`package`
         }
-        return spec
     }
 
     override fun getConfigurationEditor(): SettingsEditor<SpekRunConfiguration> {
@@ -129,11 +144,19 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                 params.mainClass = MAIN_CLASS
                 setupJavaParameters(params)
 
-                params.programParametersList.add("--spec", spec)
+                val target = this@SpekRunConfiguration.target
 
-                if (data.scope != null) {
-                    params.programParametersList.add("--scope", data.scope!!.serializedForm())
+                when (target) {
+                    is Target.Spec -> {
+                        params.programParametersList.add("--spec", target.spec)
+
+                        if (target.scope != null) {
+                            params.programParametersList.add("--scope", target.scope!!.serializedForm())
+                        }
+                    }
                 }
+
+
 
                 return params
             }
@@ -164,17 +187,44 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         writeModule(element)
-        JDOMExternalizerUtil.writeField(element, "spec", spec)
-        JDOMExternalizerUtil.writeField(element, "scope", scope?.serializedForm())
+
+        val target = this.target
+
+        when (target) {
+            is Target.Spec -> {
+                JDOMExternalizerUtil.writeField(element, "target", "spec")
+                JDOMExternalizerUtil.writeField(element, "spec", target.spec)
+                JDOMExternalizerUtil.writeField(element, "scope", target.scope?.serializedForm())
+            }
+            is Target.Package -> {
+                JDOMExternalizerUtil.writeField(element, "target", "package")
+                JDOMExternalizerUtil.writeField(element, "package", target.`package`)
+            }
+        }
+
     }
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
         readModule(element)
-        spec = JDOMExternalizerUtil.readField(element, "spec", "")
-        val scope = JDOMExternalizerUtil.readField(element, "scope", "")
-        if (!scope.isEmpty()) {
-            this.scope = Scope.parse(scope)
+        target = when (JDOMExternalizerUtil.readField(element, "target")) {
+            "spec" -> {
+                val spec = JDOMExternalizerUtil.readField(element, "spec", "")
+                val scope = JDOMExternalizerUtil.readField(element, "scope", "").run {
+                    if (isNotEmpty()) {
+                        Scope.parse(this)
+                    } else {
+                        null
+                    }
+                }
+                Target.Spec(spec, scope)
+            }
+            "package" -> {
+                Target.Package(JDOMExternalizerUtil.readField(element, "package", ""))
+            }
+            else -> {
+                throw IllegalArgumentException("Invalid run configuration")
+            }
         }
     }
 

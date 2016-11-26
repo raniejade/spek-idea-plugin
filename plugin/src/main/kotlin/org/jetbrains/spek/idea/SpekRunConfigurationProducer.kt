@@ -3,13 +3,17 @@ package org.jetbrains.spek.idea
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.junit.JavaRunConfigurationProducerBase
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.Ref
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
-import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Target
 
 /**
  * @author Ranie Jade Ramiso
@@ -27,12 +31,20 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 val cls = element.toLightClass()
                 if (cls != null && SpekUtils.isSpec(cls)) {
                     if (cls.qualifiedName != null) {
-                        configuration.spec = cls.qualifiedName!!
+                        configuration.target = Target.Spec(cls.qualifiedName!!)
                         configuration.setModule(context.module)
                         configuration.setGeneratedName()
                         configurationSet = true
                     }
                 }
+            } else if (element is PsiDirectory) {
+                val moduleRootManager = ModuleRootManager.getInstance(context.module)
+                val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
+
+                if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
+                    // TODO: support me
+                }
+
             } else if (SpekUtils.isIdentifier(element)) {
                 // when clicking on the source editor
                 val parent = element.parent
@@ -42,7 +54,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             val cls = parent.toLightClass()
                             if (cls != null && SpekUtils.isSpec(cls)) {
                                 if (cls.qualifiedName != null) {
-                                    configuration.spec = cls.qualifiedName!!
+                                    configuration.target = Target.Spec(cls.qualifiedName!!)
                                     configuration.setModule(context.module)
                                     configuration.setGeneratedName()
                                     configurationSet = true
@@ -60,8 +72,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                 val spec = SpekUtils.getContainingSpecClass(callExpression)
                                 if (spec != null) {
                                     val scope = SpekUtils.extractScope(callExpression)
-                                    configuration.spec = spec.qualifiedName!!
-                                    configuration.scope = scope
+                                    configuration.target = Target.Spec(spec.qualifiedName!!, scope)
                                     configuration.setModule(context.module)
                                     configuration.setGeneratedName()
                                     configurationSet = true
@@ -78,23 +89,30 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
     override fun isConfigurationFromContext(configuration: SpekRunConfiguration,
                                             context: ConfigurationContext): Boolean {
         val element = context.psiLocation
-        var spec: String? = null
-        var scope: Scope? = null
+        var target: Target? = null
 
         if (element != null) {
             if (element is KtClass) {
                 val cls = element.toLightClass()
                 if (cls != null && SpekUtils.isSpec(cls)) {
-                    spec = cls.qualifiedName!!
+                    target = Target.Spec(cls.qualifiedName!!)
                 }
-            } else if (SpekUtils.isIdentifier(element)) {
+            } else if (element is PsiDirectory) {
+                val moduleRootManager = ModuleRootManager.getInstance(context.module)
+                val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
+
+                if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
+                    // TODO: support me
+                }
+
+            }  else if (SpekUtils.isIdentifier(element)) {
                 val parent = element.parent
                 if (parent != null) {
                     when (parent) {
                         is KtClass -> {
                             val cls = parent.toLightClass()
                             if (cls != null && SpekUtils.isSpec(cls)) {
-                                spec = cls.qualifiedName!!
+                                target = Target.Spec(cls.qualifiedName!!)
                             }
                         }
                         is KtNameReferenceExpression -> {
@@ -107,8 +125,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             ) {
                                 val cls = SpekUtils.getContainingSpecClass(callExpression)
                                 if (cls != null) {
-                                    spec = cls.qualifiedName!!
-                                    scope = SpekUtils.extractScope(callExpression)
+                                    target = Target.Spec(cls.qualifiedName!!, SpekUtils.extractScope(callExpression))
                                 }
                             }
                         }
@@ -118,8 +135,12 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 }
             }
         }
-        return configuration.spec == spec &&
-            configuration.scope == scope &&
-            configuration.configurationModule.module == context.module
+
+        return if (target == null) {
+            false
+        } else {
+            configuration.target == target
+                && configuration.configurationModule.module == context.module
+        }
     }
 }
