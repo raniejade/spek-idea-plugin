@@ -209,7 +209,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                 Target.Package(JDOMExternalizerUtil.readField(element, "package", ""))
             }
             else -> {
-                throw IllegalArgumentException("Invalid run configuration")
+                Target.Spec("")
             }
         }
     }
