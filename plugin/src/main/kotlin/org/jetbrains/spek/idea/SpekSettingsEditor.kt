@@ -1,12 +1,14 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.application.options.ModulesComboBox
+import com.intellij.execution.configuration.BrowseModuleValueActionListener
 import com.intellij.execution.ui.ClassBrowser
 import com.intellij.execution.ui.CommonJavaParametersPanel
 import com.intellij.execution.ui.ConfigurationModuleSelector
 import com.intellij.execution.ui.DefaultJreSelector
 import com.intellij.execution.ui.JrePathEditor
 import com.intellij.ide.util.ClassFilter
+import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -21,22 +23,33 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
+import com.intellij.ui.ListCellRendererWrapper
 import org.jetbrains.spek.tooling.Scope
 import org.jetbrains.spek.tooling.Target
+import javax.swing.DefaultComboBoxModel
+import javax.swing.JComboBox
+import javax.swing.JList
 import javax.swing.JPanel
+import javax.swing.JTextField
+import kotlin.reflect.KClass
 
 /**
  * @author Ranie Jade Ramiso
  */
 class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfiguration>() {
     lateinit var panel: JPanel
+    lateinit var specPanel: JPanel
+    lateinit var packagePanel: JPanel
+
     lateinit var commonJavaParameters: CommonJavaParametersPanel
     lateinit var module: LabeledComponent<ModulesComboBox>
     lateinit var jrePathEditor: JrePathEditor
     lateinit var spec: LabeledComponent<EditorTextFieldWithBrowseButton>
     lateinit var scope: LabeledComponent<TextFieldWithBrowseButton>
+    lateinit var testPackage: LabeledComponent<TextFieldWithBrowseButton>
+    lateinit var type: LabeledComponent<JComboBox<KClass<out Target>>>
 
-    lateinit var moduleSelector: ConfigurationModuleSelector
+    var moduleSelector: ConfigurationModuleSelector
 
     private val searchScope: GlobalSearchScope
         get() {
@@ -69,6 +82,14 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         }
         set(value) {
             scope.component.text = value
+        }
+
+    private var selectedPackage: String
+        get() {
+            return testPackage.component.text
+        }
+        set (value) {
+            testPackage.component.text = value
         }
 
     init {
@@ -107,6 +128,19 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         }
 
         browser.setField(spec.component)
+
+        type.component.selectedIndex = 0
+
+        val packageBrowser = object: BrowseModuleValueActionListener<JTextField>(project) {
+            override fun showDialog(): String {
+                val dialog = PackageChooserDialog("Select package", project)
+                dialog.show()
+
+                return dialog.selectedPackage?.qualifiedName ?: ""
+            }
+        }
+
+        packageBrowser.setField(testPackage.component)
     }
 
 
@@ -116,9 +150,17 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         commonJavaParameters.reset(configuration)
 
         val target = configuration.target
-        if (target is Target.Spec) {
-            selectedSpec = target.spec
-            selectedScope = target.scope?.serializedForm() ?: ""
+
+        when (target) {
+            is Target.Spec -> {
+                type.component.selectedItem = Target.Spec::class
+                selectedSpec = target.spec
+                selectedScope = target.scope?.serializedForm() ?: ""
+            }
+            is Target.Package -> {
+                type.component.selectedItem = Target.Package::class
+                selectedPackage = target.`package`
+            }
         }
     }
 
@@ -127,13 +169,22 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
         moduleSelector.applyTo(configuration)
         commonJavaParameters.applyTo(configuration)
 
-        // TODO: check if target is spec
-        val scope = if (selectedScope.isNotEmpty()) {
-            Scope.parse(selectedScope)
-        } else {
-            null
+
+        val selectedType = type.component.selectedItem
+
+        when (selectedType) {
+            Target.Spec::class -> {
+                val scope = if (selectedScope.isNotEmpty()) {
+                    Scope.parse(selectedScope)
+                } else {
+                    null
+                }
+                configuration.target = Target.Spec(selectedSpec, scope)
+            }
+            Target.Package::class -> {
+                configuration.target = Target.Package(selectedPackage)
+            }
         }
-        configuration.target = Target.Spec(selectedSpec, scope)
     }
 
     override fun createEditor() = panel
@@ -162,6 +213,48 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
             }
 
         })
+
+        testPackage = LabeledComponent.create(
+            TextFieldWithBrowseButton(),
+            "Scope", "West"
+        )
+
+        testPackage.component.isEditable = false
+
+        val comboBox = JComboBox<KClass<out Target>>()
+        type = LabeledComponent.create(
+            comboBox, "Type", "West"
+        )
+
+        comboBox.model = DefaultComboBoxModel(
+            arrayOf(
+                Target.Spec::class,
+                Target.Package::class
+            )
+        )
+
+        comboBox.renderer = object: ListCellRendererWrapper<KClass<out Target>>() {
+            override fun customize(list: JList<*>, value: KClass<out Target>, index: Int,
+                                   selected: Boolean, hasFocus: Boolean) {
+                when (value) {
+                    Target.Spec::class -> this.setText("Spec")
+                    Target.Package::class -> this.setText("Package")
+                }
+            }
+        }
+
+        comboBox.addActionListener {
+            when (comboBox.selectedItem) {
+                Target.Spec::class -> {
+                    specPanel.isVisible = true
+                    packagePanel.isVisible = false
+                }
+                Target.Package::class -> {
+                    specPanel.isVisible = false
+                    packagePanel.isVisible = true
+                }
+            }
+        }
 
     }
 }

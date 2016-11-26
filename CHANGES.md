@@ -3,7 +3,9 @@
 ## Unreleased
 - Properly escape Service Message strings.
 - Code restructuring.
-- Run test support when right test class file in the project tree view.
+- Add support for running tests in package/directory.
+- Add support for running class file in project browser.
+- Add validity checks for run configurations.
 
 ## v0.2.6
 - Fix compatibility issue with Intellij IDEA 2016.3

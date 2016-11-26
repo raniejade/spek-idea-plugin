@@ -10,6 +10,7 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.kotlin.asJava.toLightClass
+import org.jetbrains.kotlin.idea.core.getPackage
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -32,8 +33,6 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 if (cls != null && SpekUtils.isSpec(cls)) {
                     if (cls.qualifiedName != null) {
                         configuration.target = Target.Spec(cls.qualifiedName!!)
-                        configuration.setModule(context.module)
-                        configuration.setGeneratedName()
                         configurationSet = true
                     }
                 }
@@ -42,7 +41,14 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
 
                 if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
-                    // TODO: support me
+                    val psiPackage = element.getPackage()
+
+                    if (psiPackage != null) {
+                        configuration.target = Target.Package(
+                            psiPackage.qualifiedName
+                        )
+                        configurationSet = true
+                    }
                 }
 
             } else if (SpekUtils.isIdentifier(element)) {
@@ -55,8 +61,6 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             if (cls != null && SpekUtils.isSpec(cls)) {
                                 if (cls.qualifiedName != null) {
                                     configuration.target = Target.Spec(cls.qualifiedName!!)
-                                    configuration.setModule(context.module)
-                                    configuration.setGeneratedName()
                                     configurationSet = true
                                 }
                             }
@@ -73,8 +77,6 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                                 if (spec != null) {
                                     val scope = SpekUtils.extractScope(callExpression)
                                     configuration.target = Target.Spec(spec.qualifiedName!!, scope)
-                                    configuration.setModule(context.module)
-                                    configuration.setGeneratedName()
                                     configurationSet = true
                                 }
                             }
@@ -83,6 +85,12 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 }
             }
         }
+
+        if (configurationSet) {
+            configuration.setModule(context.module)
+            configuration.setGeneratedName()
+        }
+
         return configurationSet
     }
 
@@ -102,7 +110,13 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
 
                 if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
-                    // TODO: support me
+                    val psiPackage = element.getPackage()
+
+                    if (psiPackage != null) {
+                        target = Target.Package(
+                            psiPackage.qualifiedName
+                        )
+                    }
                 }
 
             }  else if (SpekUtils.isIdentifier(element)) {

@@ -12,6 +12,7 @@ import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.JavaRunConfigurationModule
 import com.intellij.execution.configurations.ModuleBasedConfiguration
 import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.RuntimeConfigurationException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
@@ -73,22 +74,6 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
             data.target = value
         }
 
-//    var spec: String
-//        get() {
-//            return data.spec
-//        }
-//        set(value) {
-//            data.spec = value
-//        }
-//
-//    var scope: Scope?
-//        get() {
-//            return data.scope
-//        }
-//        set(value) {
-//            data.scope = value
-//        }
-
 
     override fun suggestedName(): String {
         val target = data.target
@@ -101,7 +86,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     target.spec
                 }
             }
-            is Target.Package -> target.`package`
+            is Target.Package -> "Specs in ${target.`package`}"
         }
     }
 
@@ -154,9 +139,10 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                             params.programParametersList.add("--scope", target.scope!!.serializedForm())
                         }
                     }
+                    is Target.Package -> {
+                        params.programParametersList.add("--package", target.`package`)
+                    }
                 }
-
-
 
                 return params
             }
@@ -276,7 +262,24 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         data.envs = envs
     }
 
+
+    override fun checkConfiguration() {
+        val target = this.target
+        when (target) {
+            is Target.Spec -> {
+                if (target.spec.isEmpty()) {
+                    throw RuntimeConfigurationException("Spec can't be empty.")
+                }
+            }
+            is Target.Package -> {
+                if (target.`package`.isEmpty()) {
+                    throw RuntimeConfigurationException("Package can't be empty.")
+                }
+            }
+        }
+    }
+
     companion object {
-        val MAIN_CLASS = "org.jetbrains.spek.tooling.sm.MainKt"
+        val MAIN_CLASS = "org.jetbrains.spek.tooling.MainKt"
     }
 }

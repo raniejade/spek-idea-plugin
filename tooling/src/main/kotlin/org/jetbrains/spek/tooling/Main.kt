@@ -1,8 +1,6 @@
-package org.jetbrains.spek.tooling.sm
+package org.jetbrains.spek.tooling
 
 import joptsimple.OptionParser
-import org.jetbrains.spek.tooling.Scope
-import org.jetbrains.spek.tooling.Target
 import org.jetbrains.spek.tooling.adapter.sm.ServiceMessageAdapter
 import org.jetbrains.spek.tooling.runner.junit.JUnitPlatformSpekRunner
 

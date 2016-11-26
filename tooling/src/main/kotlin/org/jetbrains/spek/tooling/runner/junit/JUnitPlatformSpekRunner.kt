@@ -22,7 +22,7 @@ class JUnitPlatformSpekRunner(target: Target): SpekRunner(target) {
         val builder = LauncherDiscoveryRequestBuilder.request()
             .filters(EngineFilter.includeEngines(SPEK))
 
-        when(target) {
+        when (target) {
             is Target.Spec -> {
                 if (target.scope != null) {
                     val result = UniqueId.parse(target.scope.serializedForm())
@@ -34,7 +34,9 @@ class JUnitPlatformSpekRunner(target: Target): SpekRunner(target) {
                 }
 
                 builder.selectors(DiscoverySelectors.selectClass(target.spec))
-                    .build()
+            }
+            is Target.Package -> {
+                builder.selectors(DiscoverySelectors.selectPackage(target.`package`))
             }
         }
 
