@@ -1,6 +1,9 @@
 # Change Log
 
 ## Unreleased
+None
+
+## v0.3.0
 - Properly escape Service Message strings.
 - Code restructuring.
 - Add support for running tests in package/directory.
