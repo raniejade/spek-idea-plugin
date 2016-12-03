@@ -50,7 +50,7 @@ object SpekUtils {
         val calleeExpression = callExpression.calleeExpression!! as KtNameReferenceExpression
         val resolved = calleeExpression.mainReference.resolve()
 
-        if (resolved != null && resolved is KtNamedFunction) {
+        if (resolved != null && resolved is KtNamedFunction && isContainedWithinLambda(callExpression)) {
             if (lambda != null && parameters.size == 2 && isDslExtension(resolved)) {
                 val desc = parameters.first().children.firstOrNull()
                 if (desc != null && desc is KtStringTemplateExpression) {
@@ -149,6 +149,8 @@ object SpekUtils {
         // CallExpression -> Block -> FunctionLiteral -> LambdaExpression
         return callExpression.parent.parent.parent as KtLambdaExpression
     }
+
+    fun isContainedWithinLambda(callExpression: KtCallExpression) = callExpression.parent.parent.parent is KtLambdaExpression
 
     fun isDslExtension(function: KtNamedFunction): Boolean {
         val receiverTypeReference = function.receiverTypeReference
