@@ -1,5 +1,6 @@
 package org.jetbrains.spek.tooling.runner.junit
 
+import org.jetbrains.spek.tooling.PathType
 import org.jetbrains.spek.tooling.Target
 import org.jetbrains.spek.tooling.runner.SpekRunner
 import org.jetbrains.spek.tooling.runner.TestExecutionResult
@@ -24,14 +25,34 @@ class JUnitPlatformSpekRunner(target: Target): SpekRunner(target) {
 
         when (target) {
             is Target.Spec -> {
-                if (target.scope != null) {
-                    val result = UniqueId.parse(target.scope.serializedForm())
-                        .segments.fold(UniqueId.forEngine(SPEK)) { current, segment ->
-                        current.append(segment.type, segment.value)
+
+                if (target.path != null) {
+                    var uniqueId = UniqueId.forEngine(SPEK)
+                    var current = target.path
+
+                    while (current != null) {
+
+                        val type = when (current.type) {
+                            PathType.SPEC -> "spec"
+                            PathType.GROUP -> "group"
+                            PathType.TEST -> "test"
+                        }
+                        uniqueId = uniqueId.append(type, current.description)
+
+                        current = current.next
                     }
 
-                    builder.selectors(DiscoverySelectors.selectUniqueId(result))
+                    builder.selectors(DiscoverySelectors.selectUniqueId(uniqueId))
                 }
+
+//                if (target.scope != null) {
+//                    val result = UniqueId.parse(target.scope.serializedForm())
+//                        .segments.fold(UniqueId.forEngine(SPEK)) { current, segment ->
+//                        current.append(segment.type, segment.value)
+//                    }
+//
+//                    builder.selectors(DiscoverySelectors.selectUniqueId(result))
+//                }
 
                 builder.selectors(DiscoverySelectors.selectClass(target.spec))
             }

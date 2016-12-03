@@ -13,7 +13,7 @@ fun main(vararg args: String) {
         val specOption = accepts("spec")
             .withRequiredArg()
 
-        val scopeOption = accepts("scope")
+        val pathOption = accepts("path")
             .withRequiredArg()
 
         val packageOption = accepts("package")
@@ -30,13 +30,13 @@ fun main(vararg args: String) {
         val options = parse(*args)
 
         val target = if (options.has(specOption)) {
-            val scope = if (options.has(scopeOption)) {
-                Scope.parse(options.valueOf(scopeOption))
+            val path = if (options.has(pathOption)) {
+                Path.deserialize(options.valueOf(pathOption))
             } else {
                 null
             }
 
-            Target.Spec(options.valueOf(specOption), scope)
+            Target.Spec(options.valueOf(specOption), path)
         } else if (options.has(packageOption)) {
             Target.Package(options.valueOf(packageOption))
         } else {

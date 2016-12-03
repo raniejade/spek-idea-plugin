@@ -24,7 +24,7 @@ import com.intellij.psi.PsiClassType
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.EditorTextFieldWithBrowseButton
 import com.intellij.ui.ListCellRendererWrapper
-import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Path
 import org.jetbrains.spek.tooling.Target
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
@@ -76,7 +76,7 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
             spec.component.text = value
         }
 
-    private var selectedScope: String
+    private var selectedPath: String
         get() {
             return scope.component.text
         }
@@ -155,7 +155,11 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
             is Target.Spec -> {
                 type.component.selectedItem = Target.Spec::class
                 selectedSpec = target.spec
-                selectedScope = target.scope?.serializedForm() ?: ""
+                if (target.path != null) {
+                    selectedPath = Path.serialize(target.path!!)
+                } else {
+                    selectedPath = ""
+                }
             }
             is Target.Package -> {
                 type.component.selectedItem = Target.Package::class
@@ -174,12 +178,12 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
         when (selectedType) {
             Target.Spec::class -> {
-                val scope = if (selectedScope.isNotEmpty()) {
-                    Scope.parse(selectedScope)
+                val path = if (selectedPath.isNotEmpty()) {
+                    Path.deserialize(selectedPath)
                 } else {
                     null
                 }
-                configuration.target = Target.Spec(selectedSpec, scope)
+                configuration.target = Target.Spec(selectedSpec, path)
             }
             Target.Package::class -> {
                 configuration.target = Target.Package(selectedPackage)
@@ -206,7 +210,7 @@ class SpekSettingsEditor(val project: Project): SettingsEditor<SpekRunConfigurat
 
         spec.component.childComponent.addDocumentListener(object: DocumentListener {
             override fun documentChanged(event: DocumentEvent?) {
-                selectedScope = ""
+                selectedPath = ""
             }
 
             override fun beforeDocumentChange(event: DocumentEvent?) {

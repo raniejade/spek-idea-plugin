@@ -1,7 +1,7 @@
 # Change Log
 
 ## Unreleased
-None
+- Decouple persisted metadata from **JUnit Platform**.
 
 ## v0.3.0
 - Properly escape Service Message strings.

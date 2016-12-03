@@ -25,9 +25,11 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.intellij.util.Base64
 import com.intellij.util.PathUtil
 import org.jdom.Element
-import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Path
+import org.jetbrains.spek.tooling.PathType
 import org.jetbrains.spek.tooling.Target
 import java.nio.file.Paths
 import java.util.Arrays
@@ -55,7 +57,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
     }
 
     private val data = Data(
-        Target.Spec("", null),
+        Target.Spec(""),
         "",
         mutableMapOf(),
         false,
@@ -80,8 +82,17 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
         return when (target) {
             is Target.Spec -> {
-                if (target.scope != null) {
-                    "${target.spec} - ${target.scope}"
+                if (target.path != null) {
+                    var desc = "${target.path?.description}"
+                    var current: Path? = target.path!!.next
+
+                    while (current != null) {
+                        desc = "$desc->${current.description}"
+                        current = current.next
+                    }
+
+
+                    desc
                 } else {
                     target.spec
                 }
@@ -119,7 +130,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     )
                 }
 
-                val jars = Paths.get(PathUtil.getJarPathForClass(Scope::class.java))
+                val jars = Paths.get(PathUtil.getJarPathForClass(Path::class.java))
                     .parent
 
                 params.classPath.addAll(
@@ -135,8 +146,8 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     is Target.Spec -> {
                         params.programParametersList.add("--spec", target.spec)
 
-                        if (target.scope != null) {
-                            params.programParametersList.add("--scope", target.scope!!.serializedForm())
+                        if (target.path != null) {
+                            params.programParametersList.add("--path", Path.serialize(target.path!!))
                         }
                     }
                     is Target.Package -> {
@@ -180,7 +191,14 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
             is Target.Spec -> {
                 JDOMExternalizerUtil.writeField(element, "target", "spec")
                 JDOMExternalizerUtil.writeField(element, "spec", target.spec)
-                JDOMExternalizerUtil.writeField(element, "scope", target.scope?.serializedForm())
+
+                if (target.path != null) {
+                    JDOMExternalizerUtil.writeField(
+                        element, "path", Base64.encode(Path.serialize(target.path!!).toByteArray())
+                    )
+                }
+
+
             }
             is Target.Package -> {
                 JDOMExternalizerUtil.writeField(element, "target", "package")
@@ -196,14 +214,42 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         target = when (JDOMExternalizerUtil.readField(element, "target")) {
             "spec" -> {
                 val spec = JDOMExternalizerUtil.readField(element, "spec", "")
+
+                // TODO (backwards compatibility): remove after 2 releases from v0.3.0
                 val scope = JDOMExternalizerUtil.readField(element, "scope", "").run {
                     if (isNotEmpty()) {
-                        Scope.parse(this)
+                        val split = this.split(Regex("(?<!\\\\)/"))
+
+                        var current: Path? = null
+
+                        split.reversed().forEach {
+                            val typeAndDesc = it.removeSurrounding("[", "]").split(":")
+                            val type = when (typeAndDesc[0]) {
+                                "spec" -> PathType.SPEC
+                                "group" -> PathType.GROUP
+                                "test" -> PathType.TEST
+                                else -> throw IllegalArgumentException("not valid type '${typeAndDesc[0]}'")
+                            }
+
+                            current = Path(type, typeAndDesc[1], current)
+                        }
+
+                        current
+
                     } else {
                         null
                     }
                 }
-                Target.Spec(spec, scope)
+
+                val path = JDOMExternalizerUtil.readField(element, "path", "").run {
+                    if (isNotEmpty()) {
+                        Path.deserialize(String(Base64.decode(this)))
+                    } else {
+                        null
+                    }
+                }
+
+                Target.Spec(spec, scope ?: path)
             }
             "package" -> {
                 Target.Package(JDOMExternalizerUtil.readField(element, "package", ""))

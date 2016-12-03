@@ -15,7 +15,8 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtStubbedPsiUtil
 import org.jetbrains.kotlin.psi.KtUserType
-import org.jetbrains.spek.tooling.Scope
+import org.jetbrains.spek.tooling.Path
+import org.jetbrains.spek.tooling.PathType
 
 /**
  * @author Ranie Jade Ramiso
@@ -116,7 +117,7 @@ object SpekUtils {
         return null
     }
 
-    fun extractScope(callExpression: KtCallExpression): Scope {
+    fun extractPath(callExpression: KtCallExpression, next: Path? = null): Path {
         val lambda = getLambaExpression(callExpression)
         val parent = lambda.parent
         val calleeExpression = callExpression.calleeExpression as KtNameReferenceExpression
@@ -124,22 +125,25 @@ object SpekUtils {
         val function = calleeExpression.mainReference.resolve() as KtNamedFunction
         val stringExpression = parameters.first().children.firstOrNull() as KtStringTemplateExpression
         val description = stringExpression.text.removeSurrounding("\"")
-        val parentScope = if (parent is KtLambdaArgument) {
-            val parentCallExpression = parent.parent as KtCallExpression
-            extractScope(parentCallExpression) as Scope.Group
-        } else {
-            val container = getContainingSpecClass(callExpression)
-            Scope.Group(null, container!!.qualifiedName!!)
-        }
 
         val fullDesc = "${function.name!!} $description"
 
-        if (isTest(function)) {
-            return Scope.Test(parentScope, fullDesc)
+        val type = if (isTest(function)) {
+            PathType.TEST
+        } else {
+            PathType.GROUP
         }
 
-        return Scope.Group(parentScope, fullDesc)
+        val path = Path(type, fullDesc, next)
 
+        return if (parent is KtLambdaArgument) {
+            val parentCallExpression = parent.parent as KtCallExpression
+
+            extractPath(parentCallExpression, path)
+        } else {
+            val container = getContainingSpecClass(callExpression)
+            Path(PathType.SPEC, container!!.qualifiedName!!, path)
+        }
     }
 
     /**

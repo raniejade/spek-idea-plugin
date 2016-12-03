@@ -9,4 +9,5 @@ dependencies {
     compile 'org.jetbrains.spek:spek-junit-platform-engine:1.0.89'
     compile 'org.junit.platform:junit-platform-launcher:1.0.0-M2'
     compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4'
 }

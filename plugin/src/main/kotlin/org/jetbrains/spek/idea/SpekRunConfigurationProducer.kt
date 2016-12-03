@@ -75,8 +75,10 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             ) {
                                 val spec = SpekUtils.getContainingSpecClass(callExpression)
                                 if (spec != null) {
-                                    val scope = SpekUtils.extractScope(callExpression)
-                                    configuration.target = Target.Spec(spec.qualifiedName!!, scope)
+                                    configuration.target = Target.Spec(
+                                        spec.qualifiedName!!,
+                                        SpekUtils.extractPath(callExpression)
+                                    )
                                     configurationSet = true
                                 }
                             }
@@ -139,7 +141,10 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                             ) {
                                 val cls = SpekUtils.getContainingSpecClass(callExpression)
                                 if (cls != null) {
-                                    target = Target.Spec(cls.qualifiedName!!, SpekUtils.extractScope(callExpression))
+                                    target = Target.Spec(
+                                        cls.qualifiedName!!,
+                                        SpekUtils.extractPath(callExpression)
+                                    )
                                 }
                             }
                         }

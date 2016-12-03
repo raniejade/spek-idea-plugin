@@ -4,7 +4,7 @@ package org.jetbrains.spek.tooling
  * @author Ranie Jade Ramiso
  */
 sealed class Target {
-    class Spec(val spec: String, val scope: Scope? = null): Target() {
+    class Spec(val spec: String, val path: Path? = null): Target() {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -18,7 +18,7 @@ sealed class Target {
             if (spec != other.spec) {
                 return false
             }
-            if (scope != other.scope) {
+            if (path != other.path) {
                 return false
             }
 
@@ -27,7 +27,7 @@ sealed class Target {
 
         override fun hashCode(): Int {
             var result = spec.hashCode()
-            result = 31 * result + (scope?.hashCode() ?: 0)
+            result = 31 * result + (path?.hashCode() ?: 0)
             return result
         }
     }
