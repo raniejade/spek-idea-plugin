@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Decouple persisted metadata from **JUnit Platform**.
+- Improve checking for spec classes (sub-classes are now correctly identified, abstract classes excluded).
 
 ## v0.3.0
 - Properly escape Service Message strings.

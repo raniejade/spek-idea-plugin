@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtStubbedPsiUtil
 
@@ -21,7 +22,7 @@ class SpekLineMarkerProvider: RunLineMarkerContributor() {
             val parent = element.parent
             if (parent != null) {
                 when (parent) {
-                    is KtClass -> {
+                    is KtClassOrObject -> {
                         if (SpekUtils.isSpec(parent) && !SpekUtils.isJUnit4(parent)) {
                             return Info(
                                 AllIcons.RunConfigurations.TestState.Run,
@@ -32,7 +33,9 @@ class SpekLineMarkerProvider: RunLineMarkerContributor() {
                     }
                     is KtNameReferenceExpression -> {
                         val callExpression = parent.parent
-                        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClass::class.java)
+                        val container = KtStubbedPsiUtil.getContainingDeclaration(
+                            callExpression, KtClassOrObject::class.java
+                        )
                         if (callExpression != null
                             && callExpression is KtCallExpression
                             && container != null

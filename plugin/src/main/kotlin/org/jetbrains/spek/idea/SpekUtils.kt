@@ -1,13 +1,17 @@
 package org.jetbrains.spek.idea
 
+import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiUtil
 import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
-import org.jetbrains.kotlin.idea.refactoring.fqName.getKotlinFqName
 import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.idea.util.findAnnotation
 import org.jetbrains.kotlin.lexer.KtToken
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtLambdaArgument
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -34,15 +38,18 @@ object SpekUtils {
     )
 
     fun isSpec(cls: KtLightClass): Boolean {
-        val superClass = cls.superClass
-        if (superClass != null) {
-            val fqName = superClass.qualifiedName
-            if (fqName == "org.jetbrains.spek.api.Spek"
-                || fqName == "org.jetbrains.spek.api.SubjectSpek") {
-                return true
-            }
+        val facade = JavaPsiFacade.getInstance(cls.project)
+        val scope = cls.resolveScope
+
+        val spec = facade.findClass("org.jetbrains.spek.api.Spek", scope)
+        val subjectSpec = facade.findClass("org.jetbrains.spek.api.SubjectSpek", scope)
+
+        if (spec == null || subjectSpec == null) {
+            return false
         }
-        return false
+
+        return !PsiUtil.isAbstractClass(cls)
+            && (cls.isInheritor(spec, true) || cls.isInheritor(subjectSpec, true))
     }
 
     fun isSpecBlock(callExpression: KtCallExpression): Boolean {
@@ -62,7 +69,7 @@ object SpekUtils {
         return false
     }
 
-    fun isSpec(cls: KtClass): Boolean {
+    fun isSpec(cls: KtClassOrObject): Boolean {
         val lcls = cls.toLightClass()
         if (lcls != null) {
             return isSpec(lcls)
@@ -70,27 +77,9 @@ object SpekUtils {
         return false
     }
 
-    fun isJUnit4(cls: KtClass): Boolean {
-        val annotation = cls.annotationEntries.find {
-            val typeReference = it.typeReference?.typeElement
-            if (typeReference != null) {
-                val referenceExpression = (typeReference as KtUserType).referenceExpression
-                if (referenceExpression != null) {
-                    val mainReference = referenceExpression.mainReference.resolve()
-                    if (mainReference != null) {
-                        val fqName = mainReference.getKotlinFqName()
-                        if (fqName != null) {
-                            "org.junit.runner.RunWith" == fqName.asString()
-                        }
-                    }
-                }
-                false
-            } else {
-                false
-            }
-
-        }
-        return annotation != null
+    fun isJUnit4(cls: KtClassOrObject): Boolean {
+        val fqName = FqName("org.junit.runner.RunWith")
+        return cls.findAnnotation(fqName) != null
     }
 
     fun isGroup(function: KtNamedFunction): Boolean {
