@@ -6,12 +6,11 @@ This is the official IntelliJ IDEA plugin for [Spek](https://github.com/JetBrain
 - Choose a specific group/test to run within a spec.
 
 ## Requirements
-- Make sure you have `org.junit.platform:junit-platform-launcher` in the test runtime classpath.
+- Make sure you have compatible versions of `org.junit.platform:junit-platform-launcher` and `org.jetbrains.spek:spek-junit-platform-engine` in the test runtime classpath.
 
 
 ## What's missing?
 - Navigate to source via the test tree.
-- Running multiple specs.
 
 ## Known Limitations
 - If your class is annotated with `@RunWith(...)` the junit plugin will take over and this plugin will not work.

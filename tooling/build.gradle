@@ -1,13 +1,14 @@
 apply plugin: "idea"
 apply plugin: "kotlin"
 
-
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
 
-    compile 'org.jetbrains.spek:spek-junit-platform-engine:1.0.89'
-    compile 'org.junit.platform:junit-platform-launcher:1.0.0-M2'
+    // TODO: remove api reference, until we publish proper POM metadata
+    runtime 'org.jetbrains.spek:spek-api:1.1.0-beta2'
+    runtime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.0-beta2'
+    compile 'org.junit.platform:junit-platform-launcher:1.0.0-M3'
     compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4'
 }
