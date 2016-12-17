@@ -1,8 +1,12 @@
 # Change Log
 
 ## Unreleased
+
+## v0.3.1
 - Decouple persisted metadata from **JUnit Platform**.
 - Improve checking for spec classes (sub-classes are now correctly identified, abstract classes excluded).
+- Upgrade bundled Spek to `1.1.0-beta2`.
+- Upgrade bundled JUnit Platform to `1.0.0-M3`
 
 ## v0.3.0
 - Properly escape Service Message strings.
