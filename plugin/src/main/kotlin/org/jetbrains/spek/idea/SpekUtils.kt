@@ -42,14 +42,13 @@ object SpekUtils {
         val scope = cls.resolveScope
 
         val spec = facade.findClass("org.jetbrains.spek.api.Spek", scope)
-        val subjectSpec = facade.findClass("org.jetbrains.spek.api.SubjectSpek", scope)
 
-        if (spec == null || subjectSpec == null) {
+        if (spec == null) {
             return false
         }
 
         return !PsiUtil.isAbstractClass(cls)
-            && (cls.isInheritor(spec, true) || cls.isInheritor(subjectSpec, true))
+            && cls.isInheritor(spec, true)
     }
 
     fun isSpecBlock(callExpression: KtCallExpression): Boolean {
@@ -148,7 +147,8 @@ object SpekUtils {
     fun isDslExtension(function: KtNamedFunction): Boolean {
         val receiverTypeReference = function.receiverTypeReference
         if (receiverTypeReference != null) {
-            return (receiverTypeReference.typeElement as KtUserType).referencedName == "Dsl"
+            val referencedName = (receiverTypeReference.typeElement as KtUserType).referencedName
+            return referencedName in arrayOf("Dsl", "Spec", "SpecBody", "TestBody", "ActionBody", "TestContainer")
         }
         return false
     }
