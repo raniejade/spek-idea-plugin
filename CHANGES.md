@@ -1,8 +1,11 @@
 # Change Log
 
 ## Unreleased
-- Ensure compatibility with Spek `1.1.0-beta3`
-- Upgrade to Kotlin 1.0.6
+
+## v0.3.2
+- Ensure compatibility with Spek `1.1.0-beta3`.
+- Upgrade to Kotlin 1.0.6.
+- Upgrade bundled Spek to `1.1.0-beta3`.
 
 ## v0.3.1
 - Decouple persisted metadata from **JUnit Platform**.

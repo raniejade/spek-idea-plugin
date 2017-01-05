@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.idea.util.findAnnotation
 import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtLambdaArgument
 import org.jetbrains.kotlin.psi.KtLambdaExpression
@@ -90,7 +89,7 @@ object SpekUtils {
     }
 
     fun isContainedInSpec(callExpression: KtCallExpression): Boolean {
-        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClass::class.java)
+        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClassOrObject::class.java)
         if (container != null) {
             return isSpec(container)
         }
@@ -98,7 +97,7 @@ object SpekUtils {
     }
 
     fun getContainingSpecClass(callExpression: KtCallExpression): KtLightClass? {
-        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClass::class.java)
+        val container = KtStubbedPsiUtil.getContainingDeclaration(callExpression, KtClassOrObject::class.java)
         if (container != null && isSpec(container)) {
             return container.toLightClass()
         }

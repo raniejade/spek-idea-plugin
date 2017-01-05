@@ -12,7 +12,7 @@ import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.idea.core.getPackage
 import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.spek.tooling.Target
 
@@ -27,7 +27,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
         var configurationSet = false
         if (!sourceElement.isNull) {
             val element = sourceElement.get()!!
-            if (element is KtClass) {
+            if (element is KtClassOrObject) {
                 // when clicking on the class file in the project view
                 val cls = element.toLightClass()
                 if (cls != null && SpekUtils.isSpec(cls)) {
@@ -56,7 +56,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 val parent = element.parent
                 if (parent != null) {
                     when (parent) {
-                        is KtClass -> {
+                        is KtClassOrObject -> {
                             val cls = parent.toLightClass()
                             if (cls != null && SpekUtils.isSpec(cls)) {
                                 if (cls.qualifiedName != null) {
@@ -102,7 +102,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
         var target: Target? = null
 
         if (element != null) {
-            if (element is KtClass) {
+            if (element is KtClassOrObject) {
                 val cls = element.toLightClass()
                 if (cls != null && SpekUtils.isSpec(cls)) {
                     target = Target.Spec(cls.qualifiedName!!)
@@ -125,7 +125,7 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                 val parent = element.parent
                 if (parent != null) {
                     when (parent) {
-                        is KtClass -> {
+                        is KtClassOrObject -> {
                             val cls = parent.toLightClass()
                             if (cls != null && SpekUtils.isSpec(cls)) {
                                 target = Target.Spec(cls.qualifiedName!!)
