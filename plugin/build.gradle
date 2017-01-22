@@ -15,7 +15,7 @@ def profiles = [
     },
     'idea15': { intellij ->
         intellij.version = '143.1821.5'
-        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115',]
+        intellij.plugins = ['org.jetbrains.kotlin:1.0.4-release-IJ143-115']
     },
     'local': { intellij ->
         intellij.version = '2016.1'

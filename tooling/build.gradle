@@ -5,9 +5,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
 
-    // TODO: remove api reference, until we publish proper POM metadata
-    runtime 'org.jetbrains.spek:spek-api:1.1.0-beta3'
-    runtime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.0-beta3'
     compile 'org.junit.platform:junit-platform-launcher:1.0.0-M3'
     compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4'

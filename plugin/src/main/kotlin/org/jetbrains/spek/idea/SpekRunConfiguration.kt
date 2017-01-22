@@ -1,5 +1,9 @@
 package org.jetbrains.spek.idea
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.databind.BeanProperty
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.intellij.diagnostic.logging.LogConfigurationPanel
 import com.intellij.execution.CommonJavaRunConfigurationParameters
 import com.intellij.execution.DefaultExecutionResult
@@ -27,11 +31,15 @@ import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.util.Base64
 import com.intellij.util.PathUtil
+import joptsimple.OptionParser
 import org.jdom.Element
 import org.jetbrains.spek.tooling.Path
 import org.jetbrains.spek.tooling.PathType
 import org.jetbrains.spek.tooling.Target
-import java.nio.file.Paths
+import org.junit.platform.commons.annotation.Testable
+import org.junit.platform.engine.TestEngine
+import org.junit.platform.launcher.Launcher
+import org.opentest4j.TestSkippedException
 import java.util.Arrays
 
 /**
@@ -130,11 +138,32 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                     )
                 }
 
-                val jars = Paths.get(PathUtil.getJarPathForClass(Path::class.java))
-                    .parent
+                val jars = mutableListOf(
+                    /* tooling jar*/
+                    PathUtil.getJarPathForClass(Path::class.java),
+
+                    /* jackson */
+                    PathUtil.getJarPathForClass(JsonFactory::class.java),
+                    PathUtil.getJarPathForClass(JsonCreator::class.java),
+                    PathUtil.getJarPathForClass(BeanProperty::class.java),
+                    PathUtil.getJarPathForClass(KotlinModule::class.java),
+
+                    /* jopt */
+                    PathUtil.getJarPathForClass(OptionParser::class.java)
+                )
+
+                if (module.findClass(Launcher::class.qualifiedName) == null) {
+                    jars.addAll(arrayOf(
+                        /* platform launcher */
+                        PathUtil.getJarPathForClass(Launcher::class.java),
+                        PathUtil.getJarPathForClass(TestEngine::class.java),
+                        PathUtil.getJarPathForClass(Testable::class.java),
+                        PathUtil.getJarPathForClass(TestSkippedException::class.java)
+                    ))
+                }
 
                 params.classPath.addAll(
-                    mutableListOf("$jars/*")
+                    jars
                 )
 
                 params.mainClass = MAIN_CLASS
