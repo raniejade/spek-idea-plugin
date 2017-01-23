@@ -2,10 +2,13 @@ apply plugin: "idea"
 apply plugin: "kotlin"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compileOnly "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
 
     compile 'org.junit.platform:junit-platform-launcher:1.0.0-M3'
     compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
-    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4'
+
+    compile ('com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
 }
