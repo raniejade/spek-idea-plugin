@@ -11,6 +11,7 @@ import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.JavaRunConfigurationExtensionManager
 import com.intellij.execution.application.BaseJavaApplicationCommandLineState
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.JavaRunConfigurationModule
@@ -235,6 +236,16 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
             }
         }
 
+        JDOMExternalizerUtil.writeField(element, "vm-parameters", data.vmParameters)
+        JDOMExternalizerUtil.writeField(element, "program-parameters", data.programParameters ?: "")
+        JDOMExternalizerUtil.writeField(element, "working-directory", data.workingDirectory ?: "")
+        if (data.isAlternativeJrePathEnabled) {
+            JDOMExternalizerUtil.writeField(element, "alternative-jre-enabled", "true")
+        }
+        JDOMExternalizerUtil.writeField(element, "alternative-jre-path", data.alternativeJrePath)
+
+        EnvironmentVariablesComponent.writeExternal(element, data.envs)
+
     }
 
     override fun readExternal(element: Element) {
@@ -287,6 +298,15 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
                 Target.Spec("")
             }
         }
+
+        data.vmParameters = JDOMExternalizerUtil.readField(element, "vm-parameters", "")
+        data.programParameters = JDOMExternalizerUtil.readField(element, "program-parameters", "")
+        data.workingDirectory = JDOMExternalizerUtil.readField(element, "working-directory", "")
+        data.isAlternativeJrePathEnabled = JDOMExternalizerUtil.readField(element, "alternative-jre-enabled", "")
+            .isNotBlank()
+        data.alternativeJrePath = JDOMExternalizerUtil.readField(element, "alternative-jre-path", "")
+
+        EnvironmentVariablesComponent.readExternal(element, data.envs)
     }
 
     override fun setAlternativeJrePath(path: String) {
