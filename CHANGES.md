@@ -1,6 +1,9 @@
 # Change Log
 
 ## Unreleased
+
+
+## v0.3.3
 - Remove unnecessary bundled spek jars. Only `junit-platform-launcher` will be included, but
   it will only be used if it's not already included in the targets classpath.
 - Remove bundled kotlin jars (already provided at runtime).
