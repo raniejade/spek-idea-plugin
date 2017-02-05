@@ -13,23 +13,23 @@ class ServiceMessageAdapter: Adapter() {
     override fun executionFinished(test: TestIdentifier, result: TestExecutionResult) {
         val name = test.displayName.toTcSafeString()
         if (test.container) {
+            if (result.status != TestExecutionResult.Status.Success) {
+                val exceptionDetails = getExceptionDetails(result)
+
+                // fake a child test
+                out("testStarted name='$name'")
+                out("testFailed name='$name' message='${exceptionDetails.first}' details='${exceptionDetails.second}'")
+                out("testFinished name='$name'")
+            }
             out("testSuiteFinished name='$name'")
         } else {
             val duration = result.duration
             if (result.status != TestExecutionResult.Status.Success) {
-                val throwable = result.throwable!!
-                val writer = CharArrayWriter()
-                throwable.printStackTrace(PrintWriter(writer))
-                val details = writer.toString()
-                    .toTcSafeString()
+                val exceptionDetails = getExceptionDetails(result)
+                out("testFailed name='$name' message='${exceptionDetails.first}' details='${exceptionDetails.second}'")
 
-                val message = throwable.message?.toTcSafeString()
-
-                out("testFailed name='$name' duration='$duration' message='$message' details='$details'")
-
-            } else {
-                out("testFinished name='$name' duration='$duration'")
             }
+            out("testFinished name='$name' duration='$duration'")
         }
     }
 
@@ -46,6 +46,18 @@ class ServiceMessageAdapter: Adapter() {
         val name = testIdentifier.displayName.toTcSafeString()
         out("testIgnored name='$name' ignoreComment='$reason'")
         out("testFinished name='$name'")
+    }
+
+    private fun getExceptionDetails(result: TestExecutionResult): Pair<String?, String> {
+        val throwable = result.throwable!!
+        val writer = CharArrayWriter()
+        throwable.printStackTrace(PrintWriter(writer))
+        val details = writer.toString()
+            .toTcSafeString()
+
+        val message = throwable.message?.toTcSafeString()
+
+        return message to details
     }
 }
 
