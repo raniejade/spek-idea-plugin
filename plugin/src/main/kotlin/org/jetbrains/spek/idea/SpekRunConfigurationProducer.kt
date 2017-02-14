@@ -37,17 +37,19 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                     }
                 }
             } else if (element is PsiDirectory) {
-                val moduleRootManager = ModuleRootManager.getInstance(context.module)
-                val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
+                if (context.module != null) {
+                    val moduleRootManager = ModuleRootManager.getInstance(context.module)
+                    val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
 
-                if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
-                    val psiPackage = element.getPackage()
+                    if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
+                        val psiPackage = element.getPackage()
 
-                    if (psiPackage != null) {
-                        configuration.target = Target.Package(
-                            psiPackage.qualifiedName
-                        )
-                        configurationSet = true
+                        if (psiPackage != null) {
+                            configuration.target = Target.Package(
+                                psiPackage.qualifiedName
+                            )
+                            configurationSet = true
+                        }
                     }
                 }
 

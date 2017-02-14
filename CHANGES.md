@@ -1,7 +1,7 @@
 # Change Log
 
 ## Unreleased
-
+- (#30) Fix exception when running gradle tasks.
 
 ## v0.3.3
 - Remove unnecessary bundled spek jars. Only `junit-platform-launcher` will be included, but
