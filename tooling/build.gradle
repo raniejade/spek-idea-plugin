@@ -1,14 +1,33 @@
 apply plugin: "idea"
 apply plugin: "kotlin"
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
+configurations {
+    relocate
+
+    compileOnly {
+        extendsFrom relocate
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.relocate]
+    classifier = null
+
+    relocate 'joptsimple', 'shadow.joptsimple'
+    relocate 'com.fasterxml', 'shadow.com.fasterxml'
+}
+
+jar.finalizedBy shadowJar
+
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compileOnly "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
 
     compile 'org.junit.platform:junit-platform-launcher:1.0.0-M3'
-    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+    relocate 'net.sf.jopt-simple:jopt-simple:5.0.3'
 
-    compile ('com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4') {
+    relocate ('com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4') {
         exclude group: 'org.jetbrains.kotlin'
     }
 }

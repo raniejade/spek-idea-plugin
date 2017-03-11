@@ -1,9 +1,5 @@
 package org.jetbrains.spek.idea
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.databind.BeanProperty
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.intellij.diagnostic.logging.LogConfigurationPanel
 import com.intellij.execution.CommonJavaRunConfigurationParameters
 import com.intellij.execution.DefaultExecutionResult
@@ -32,7 +28,6 @@ import com.intellij.openapi.options.SettingsEditorGroup
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.util.Base64
 import com.intellij.util.PathUtil
-import joptsimple.OptionParser
 import org.jdom.Element
 import org.jetbrains.spek.tooling.Path
 import org.jetbrains.spek.tooling.PathType
@@ -141,16 +136,16 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
                 val jars = mutableListOf(
                     /* tooling jar*/
-                    PathUtil.getJarPathForClass(Path::class.java),
+                    PathUtil.getJarPathForClass(Path::class.java)
 
-                    /* jackson */
-                    PathUtil.getJarPathForClass(JsonFactory::class.java),
-                    PathUtil.getJarPathForClass(JsonCreator::class.java),
-                    PathUtil.getJarPathForClass(BeanProperty::class.java),
-                    PathUtil.getJarPathForClass(KotlinModule::class.java),
-
-                    /* jopt */
-                    PathUtil.getJarPathForClass(OptionParser::class.java)
+//                    /* jackson */
+//                    PathUtil.getJarPathForClass(JsonFactory::class.java),
+//                    PathUtil.getJarPathForClass(JsonCreator::class.java),
+//                    PathUtil.getJarPathForClass(BeanProperty::class.java),
+//                    PathUtil.getJarPathForClass(KotlinModule::class.java),
+//
+//                    /* jopt */
+//                    PathUtil.getJarPathForClass(OptionParser::class.java)
                 )
 
                 if (module.findClass(Launcher::class.qualifiedName) == null) {
