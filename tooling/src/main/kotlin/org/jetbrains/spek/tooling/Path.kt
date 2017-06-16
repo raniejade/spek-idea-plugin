@@ -20,4 +20,30 @@ class Path(@JsonProperty("type") val type: PathType,
 
         fun deserialize(path: String): Path = mapper.readValue(path)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        if (other?.javaClass != javaClass) {
+            return false
+        }
+
+        other as Path
+
+        if (this.type != other.type) {
+            return false
+        }
+
+        if (this.description != other.description) {
+            return false
+        }
+
+        if (this.next != other.next) {
+            return false
+        }
+
+        return true
+    }
 }

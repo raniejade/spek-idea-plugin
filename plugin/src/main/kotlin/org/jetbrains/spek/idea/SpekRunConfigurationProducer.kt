@@ -8,12 +8,15 @@ import com.intellij.openapi.util.Ref
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.idea.core.getPackage
+import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.spek.tooling.Target
 
 /**
@@ -88,6 +91,14 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
                     }
                 }
             }
+
+            if (!configurationSet && SpekUtils.isInKotlinFile(element)) {
+                val target = targetForNearestSurroundingSpekBlock(element)
+                if (target != null) {
+                    configuration.target = target
+                    configurationSet = true
+                }
+            }
         }
 
         if (configurationSet) {
@@ -155,6 +166,10 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
 
                 }
             }
+
+            if (target == null && SpekUtils.isInKotlinFile(element)) {
+                target = targetForNearestSurroundingSpekBlock(element)
+            }
         }
 
         return if (target == null) {
@@ -163,5 +178,28 @@ class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConf
             configuration.target == target
                 && configuration.configurationModule.module == context.module
         }
+    }
+
+    private fun targetForNearestSurroundingSpekBlock(element: PsiElement): Target?
+    {
+        var nearestCallExpression = PsiTreeUtil.getParentOfType(element, KtCallExpression::class.java)
+
+        while (nearestCallExpression != null) {
+            val calleeExpression = nearestCallExpression.calleeExpression!! as KtNameReferenceExpression
+            val resolved = calleeExpression.mainReference.resolve()
+
+            if (resolved is KtNamedFunction && SpekUtils.isGroupOrTest(resolved)) {
+                val spec = SpekUtils.getContainingSpecClass(nearestCallExpression)
+                if (spec != null) {
+                    return Target.Spec(
+                            spec.qualifiedName!!,
+                            SpekUtils.extractPath(nearestCallExpression)
+                    )
+                }
+            }
+            nearestCallExpression = PsiTreeUtil.getParentOfType(nearestCallExpression, KtCallExpression::class.java)
+        }
+
+        return null
     }
 }
