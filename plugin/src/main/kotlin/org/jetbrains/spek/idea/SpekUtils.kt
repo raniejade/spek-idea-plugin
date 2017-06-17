@@ -2,6 +2,7 @@ package org.jetbrains.spek.idea
 
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtil
 import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.asJava.toLightClass
@@ -13,6 +14,7 @@ import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtLambdaArgument
 import org.jetbrains.kotlin.psi.KtLambdaExpression
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
@@ -78,6 +80,15 @@ object SpekUtils {
     fun isJUnit4(cls: KtClassOrObject): Boolean {
         val fqName = FqName("org.junit.runner.RunWith")
         return cls.findAnnotation(fqName) != null
+    }
+
+    fun isInKotlinFile(element: PsiElement): Boolean {
+        val file = PsiTreeUtil.getParentOfType(element, KtFile::class.java)
+        return file != null
+    }
+
+    fun isGroupOrTest(function: KtNamedFunction): Boolean {
+        return isGroup(function) || isTest(function)
     }
 
     fun isGroup(function: KtNamedFunction): Boolean {
