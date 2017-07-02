@@ -26,7 +26,7 @@ The project uses `com.zoltu.git-versioning`, which means versions are maintained
 
 
 ## Testing
-`./gradlew plugin:runIdea -Pprofile={profile}`. 
+`./gradlew plugin:runIde -Pprofile={profile}`. 
 
 List of profiles can be found at `plugin.gradle`.
 
