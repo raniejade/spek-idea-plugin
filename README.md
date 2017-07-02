@@ -31,4 +31,4 @@ The project uses `com.zoltu.git-versioning`, which means versions are maintained
 List of profiles can be found at `plugin.gradle`.
 
 ## Building
-`./gradlew clean plugin:builPlugin`
+`./gradlew clean plugin:buildPlugin`
