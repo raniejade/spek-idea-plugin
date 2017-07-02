@@ -64,7 +64,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         Target.Spec(""),
         "",
         mutableMapOf(),
-        false,
+        true,
         "",
         "",
         "",
@@ -238,6 +238,9 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
             JDOMExternalizerUtil.writeField(element, "alternative-jre-enabled", "true")
         }
         JDOMExternalizerUtil.writeField(element, "alternative-jre-path", data.alternativeJrePath)
+        if (data.isPassParentEnvs) {
+            JDOMExternalizerUtil.writeField(element, "pass-parent-envs", "true")
+        }
 
         EnvironmentVariablesComponent.writeExternal(element, data.envs)
 
@@ -300,6 +303,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
         data.isAlternativeJrePathEnabled = JDOMExternalizerUtil.readField(element, "alternative-jre-enabled", "")
             .isNotBlank()
         data.alternativeJrePath = JDOMExternalizerUtil.readField(element, "alternative-jre-path", "")
+        data.isPassParentEnvs = JDOMExternalizerUtil.readField(element, "pass-parent-envs", "").isNotBlank()
 
         EnvironmentVariablesComponent.readExternal(element, data.envs)
     }
