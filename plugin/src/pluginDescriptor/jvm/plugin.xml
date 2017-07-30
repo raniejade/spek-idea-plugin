@@ -20,7 +20,7 @@
     <depends>com.intellij.modules.lang</depends>
     -->
     <depends>org.jetbrains.kotlin</depends>
-    <depends config-file="idea.xml">com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="org.jetbrains.spek.idea.SpekJvmRunConfigurationType"/>

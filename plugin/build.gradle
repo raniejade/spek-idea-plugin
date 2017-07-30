@@ -4,6 +4,10 @@ apply plugin: "kotlin"
 
 def isAndroidStudio = findProperty("as") != null
 
+if (isAndroidStudio) {
+    version = "$version-as"
+}
+
 intellij {
     pluginName = 'spek-idea-plugin'
     updateSinceUntilBuild = false
@@ -31,11 +35,5 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compileOnly "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
     compileOnly fileTree(dir: "$localAndroidStudio/plugins/android/lib", include: ['*.jar'])
-    compile project(':tooling')
-}
-
-dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compileOnly "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
     compile project(':tooling')
 }
