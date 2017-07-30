@@ -6,13 +6,16 @@ import com.intellij.icons.AllIcons
 /**
  * @author Ranie Jade Ramiso
  */
-class SpekRunConfigurationType: ConfigurationTypeBase(
-    "spek-run-configuration",
-    "Spek",
+abstract class SpekRunConfigurationType(id: String, displayName: String): ConfigurationTypeBase(
+    id,
+    displayName,
     "Run Spek tests",
     AllIcons.RunConfigurations.Junit
 ) {
+    protected abstract fun createConfigurationFactory(type: SpekRunConfigurationType): SpekConfigurationFactory
+
     init {
-        addFactory(SpekConfigurationFactory(this))
+        addFactory(createConfigurationFactory(this))
     }
+
 }

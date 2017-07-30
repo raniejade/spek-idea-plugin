@@ -9,8 +9,12 @@ import com.intellij.openapi.project.Project
 /**
  * @author Ranie Jade Ramiso
  */
-class SpekConfigurationFactory(type: ConfigurationType): ConfigurationFactory(type) {
+abstract class SpekConfigurationFactory(type: ConfigurationType): ConfigurationFactory(type) {
     override fun createTemplateConfiguration(project: Project): RunConfiguration {
-        return SpekRunConfiguration(JavaRunConfigurationModule(project, true), this, "Unnamed")
+        return createSpekRunConfiguration(JavaRunConfigurationModule(project, true), this, "Unnamed")
     }
+
+    protected abstract fun createSpekRunConfiguration(configurationModule: JavaRunConfigurationModule,
+                                                      factory: SpekConfigurationFactory,
+                                                      name: String): SpekRunConfiguration
 }

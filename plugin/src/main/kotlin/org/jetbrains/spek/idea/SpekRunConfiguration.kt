@@ -41,7 +41,7 @@ import java.util.Arrays
 /**
  * @author Ranie Jade Ramiso
  */
-class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModule, factory: ConfigurationFactory, name: String)
+open class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModule, factory: ConfigurationFactory, name: String)
 : ModuleBasedConfiguration<JavaRunConfigurationModule>(name, javaRunConfigurationModule, factory), CommonJavaRunConfigurationParameters {
 
     data class Data(
@@ -185,7 +185,7 @@ class SpekRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModul
 
             fun createConsole(executor: Executor, processHandler: ProcessHandler): ConsoleView {
                 val consoleProperties = object: SMTRunnerConsoleProperties(
-                    this@SpekRunConfiguration, "cucumber", executor
+                    this@SpekRunConfiguration, "spek", executor
                 ) {
                     override fun getTestLocator() = SpekTestLocator()
                 }

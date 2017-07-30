@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>org.jetbrains.spek.spek-idea-plugin</id>
     <name>Spek</name>
     <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
@@ -20,10 +20,9 @@
     <depends>com.intellij.modules.lang</depends>
     -->
     <depends>org.jetbrains.kotlin</depends>
-    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="org.jetbrains.spek.idea.SpekRunConfigurationType"/>
+        <configurationType implementation="org.jetbrains.spek.idea.androidstudio.SpekAndroidConfigurationType"/>
         <runConfigurationProducer implementation="org.jetbrains.spek.idea.SpekRunConfigurationProducer"/>
         <implicitUsageProvider implementation="org.jetbrains.spek.idea.SpekImplicitUsageProvider"/>
         <runLineMarkerContributor language="kotlin" implementationClass="org.jetbrains.spek.idea.SpekLineMarkerProvider"/>
