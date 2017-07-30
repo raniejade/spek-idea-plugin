@@ -19,16 +19,18 @@ setup, adding `assembleDebugUnitTest` should suffice.
 
 # Development
 Import the project to any IDE that supports gradle, do note that if you're using IntelliJ IDEA the imported project 
-is not marked as IDEA plugin project.
+is not marked as IDEA plugin project. You also need a local installation of Android Studio; update `localAndroidStudio`
+in `gradle.properties` to point to that installation.
 
 ## Versions
 The project uses `com.zoltu.git-versioning`, which means versions are maintained via git tags.
 
 
 ## Testing
-`./gradlew plugin:runIde -Pprofile={profile}`. 
+`./gradlew plugin:runIde`.
 
-List of profiles can be found at `plugin.gradle`.
+## Testing - Android Studio
+`./gradlew plugin:runIde -Pas`.
 
 ## Building
 `./gradlew clean plugin:buildPlugin`
