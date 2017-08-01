@@ -23,7 +23,7 @@ import org.jetbrains.spek.tooling.Target
  * @author Ranie Jade Ramiso
  */
 class SpekRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekRunConfiguration>(
-    ConfigurationTypeUtil.findConfigurationType(SpekRunConfigurationType::class.java)
+    ConfigurationTypeUtil.findConfigurationType(DynamicConfigurationType::class.java)
 ) {
     override fun setupConfigurationFromContext(configuration: SpekRunConfiguration, context: ConfigurationContext,
                                                sourceElement: Ref<PsiElement>): Boolean {

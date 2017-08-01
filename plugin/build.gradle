@@ -4,10 +4,6 @@ apply plugin: "kotlin"
 
 def isAndroidStudio = findProperty("as") != null
 
-if (isAndroidStudio) {
-    version = "$version-as"
-}
-
 intellij {
     pluginName = 'spek-idea-plugin'
     updateSinceUntilBuild = false
@@ -20,14 +16,6 @@ intellij {
     } else {
         intellij.version = '2016.1'
         plugins = ['org.jetbrains.kotlin:1.1.1-release-IJ2016.1-1']
-    }
-}
-
-patchPluginXml {
-    if (isAndroidStudio) {
-        pluginXmlFiles = ['src/pluginDescriptor/android/plugin.xml']
-    } else {
-        pluginXmlFiles = ['src/pluginDescriptor/jvm/plugin.xml']
     }
 }
 

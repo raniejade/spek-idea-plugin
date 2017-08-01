@@ -1,10 +1,10 @@
 package org.jetbrains.spek.idea
 
-class SpekJvmRunConfigurationType: SpekRunConfigurationType(
+class SpekJvmRunConfigurationType: SpekConfigurationType(
     "org.spekframework.spek-jvm",
     "Spek"
 ) {
-    override fun createConfigurationFactory(type: SpekRunConfigurationType): SpekConfigurationFactory {
+    override fun createConfigurationFactory(type: SpekConfigurationType): SpekConfigurationFactory {
         return SpekJvmConfigurationFactory(type)
     }
 }

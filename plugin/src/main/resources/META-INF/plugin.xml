@@ -12,7 +12,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="162.0"/>
+    <idea-version since-build="143.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -21,14 +21,18 @@
     -->
     <depends>org.jetbrains.kotlin</depends>
     <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.modules.androidstudio</depends>
+    <depends optional="true" config-file="android.xml">com.intellij.modules.androidstudio</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="org.jetbrains.spek.idea.androidstudio.SpekAndroidConfigurationType"/>
+        <configurationType implementation="org.jetbrains.spek.idea.DynamicConfigurationType"/>
         <runConfigurationProducer implementation="org.jetbrains.spek.idea.SpekRunConfigurationProducer"/>
         <implicitUsageProvider implementation="org.jetbrains.spek.idea.SpekImplicitUsageProvider"/>
         <runLineMarkerContributor language="kotlin" implementationClass="org.jetbrains.spek.idea.SpekLineMarkerProvider"/>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="pluginOverride" interface="org.jetbrains.spek.idea.PluginOverride"/>
+    </extensionPoints>
 
     <actions>
         <!-- Add your actions here -->

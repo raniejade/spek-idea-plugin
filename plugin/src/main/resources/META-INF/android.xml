@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="org.jetbrains.spek.spek-idea-plugin">
+        <pluginOverride implementation="org.jetbrains.spek.idea.androidstudio.PluginAndroidOverride"/>
+    </extensions>
+</idea-plugin>

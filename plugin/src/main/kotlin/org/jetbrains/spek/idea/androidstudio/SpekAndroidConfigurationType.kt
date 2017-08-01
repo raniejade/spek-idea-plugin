@@ -1,13 +1,13 @@
 package org.jetbrains.spek.idea.androidstudio
 
 import org.jetbrains.spek.idea.SpekConfigurationFactory
-import org.jetbrains.spek.idea.SpekRunConfigurationType
+import org.jetbrains.spek.idea.SpekConfigurationType
 
-class SpekAndroidConfigurationType: SpekRunConfigurationType(
+class SpekAndroidConfigurationType: SpekConfigurationType(
     "SpecsRunConfiguration", // hardcoded :(
-    "Spek - Android"
+    "Spek"
 ) {
-    override fun createConfigurationFactory(type: SpekRunConfigurationType): SpekConfigurationFactory {
+    override fun createConfigurationFactory(type: SpekConfigurationType): SpekConfigurationFactory {
         return SpekAndroidConfigurationFactory(type)
     }
 }
