@@ -74,6 +74,8 @@ private fun String.toTcSafeString(): String {
 }
 
 private fun out(event: String) {
+    /* ensure ##teamcity has it's own line*/
+    println()
     println("##teamcity[$event]")
 }
 
