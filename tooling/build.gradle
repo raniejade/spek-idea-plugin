@@ -24,7 +24,7 @@ jar.finalizedBy shadowJar
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    compile 'org.junit.platform:junit-platform-launcher:1.0.0-M3'
+    compile 'org.junit.platform:junit-platform-launcher:1.0.0-RC2'
     relocate 'net.sf.jopt-simple:jopt-simple:5.0.3'
 
     relocate ('com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4') {
