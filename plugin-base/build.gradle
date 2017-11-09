@@ -1,0 +1,18 @@
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: "idea"
+apply plugin: "kotlin"
+
+intellij {
+    pluginName = 'spek-idea-plugin'
+    updateSinceUntilBuild = false
+    downloadSources = true
+    instrumentCode = false
+
+    version = '2016.3'
+    plugins = ['org.jetbrains.kotlin:1.1.51-release-IJ2016.3-1']
+}
+
+dependencies {
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile project(':tooling')
+}

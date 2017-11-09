@@ -1,0 +1,45 @@
+<idea-plugin>
+    <id>org.jetbrains.spek.spek-idea-plugin</id>
+    <name>Spek</name>
+    <vendor email="raniejaderamiso@gmail.com" url="http://polymorphicpanda.io">Ranie Jade Ramiso</vendor>
+    <description><![CDATA[
+      Official IntelliJ IDEA plugin for <a href="http://jetbrains.github.io/spek/">Spek</a>.
+    ]]></description>
+
+    <change-notes><![CDATA[
+      See https://github.com/raniejade/spek-idea-plugin/blob/master/CHANGES.md
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="171.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.androidstudio</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <configurationType implementation="org.jetbrains.spek.studio.SpekAndroidConfigurationType"/>
+        <runConfigurationProducer implementation="org.jetbrains.spek.idea.SpekJvmRunConfigurationProducer"/>
+        <implicitUsageProvider implementation="org.jetbrains.spek.idea.SpekJvmImplicitUsageProvider"/>
+        <runLineMarkerContributor language="kotlin" implementationClass="org.jetbrains.spek.idea.SpekJvmLineMarkerProvider"/>
+    </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="parameterPatcher" interface="org.jetbrains.spek.idea.SpekJvmParameterPatcher"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="org.jetbrains.spek.spek-idea-plugin">
+        <parameterPatcher implementation="org.jetbrains.spek.studio.SpekAndroidParameterPatcher"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>

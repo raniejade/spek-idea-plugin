@@ -1,2 +1,6 @@
-include 'plugin'
 include 'tooling'
+
+include 'plugin-base'
+include 'plugin-jvm'
+include 'plugin-idea'
+include 'plugin-studio3.0'

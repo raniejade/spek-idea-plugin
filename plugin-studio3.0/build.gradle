@@ -1,0 +1,20 @@
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: "idea"
+apply plugin: "kotlin"
+
+intellij {
+    pluginName = 'spek-idea-plugin'
+    updateSinceUntilBuild = false
+    downloadSources = true
+    instrumentCode = false
+
+    localPath = "$localAndroidStudio"
+    plugins = ['org.jetbrains.kotlin:1.1.51-release-Studio3.0-1', 'gradle']
+    alternativeIdePath = "$localAndroidStudio"
+}
+
+dependencies {
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compileOnly fileTree(dir: "$localAndroidStudio/plugins/android/lib", include: ['*.jar'])
+    compile project(':plugin-jvm')
+}
