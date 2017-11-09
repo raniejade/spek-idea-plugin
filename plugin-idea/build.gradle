@@ -16,3 +16,7 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile project(':plugin-jvm')
 }
+
+buildPlugin {
+    baseName = ''
+}

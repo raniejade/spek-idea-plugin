@@ -18,3 +18,8 @@ dependencies {
     compileOnly fileTree(dir: "$localAndroidStudio/plugins/android/lib", include: ['*.jar'])
     compile project(':plugin-jvm')
 }
+
+buildPlugin {
+    baseName = ''
+    classifier = 'studio3.0'
+}
