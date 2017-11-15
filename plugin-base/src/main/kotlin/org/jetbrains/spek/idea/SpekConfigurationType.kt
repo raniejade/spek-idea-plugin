@@ -7,5 +7,5 @@ abstract class SpekConfigurationType(id: String, displayName: String): Configura
     id,
     displayName,
     "Run specifications",
-    KotlinIcons.KOTLIN_LOGO_24
+    KotlinIcons.SMALL_LOGO_13
 )

@@ -23,3 +23,7 @@ buildPlugin {
     baseName = ''
     classifier = 'studio3.0'
 }
+
+patchPluginXml {
+    version = "${project.version}-studio3.0"
+}
