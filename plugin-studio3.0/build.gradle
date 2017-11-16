@@ -6,7 +6,6 @@ intellij {
     pluginName = 'spek-idea-plugin'
     updateSinceUntilBuild = false
     downloadSources = true
-    instrumentCode = false
 
     localPath = "$localAndroidStudio"
     plugins = ['org.jetbrains.kotlin:1.1.51-release-Studio3.0-1', 'gradle']

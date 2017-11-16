@@ -6,7 +6,6 @@ intellij {
     pluginName = 'spek-idea-plugin'
     updateSinceUntilBuild = false
     downloadSources = true
-    instrumentCode = false
 
     version = '2016.3'
     plugins = ['org.jetbrains.kotlin:1.1.51-release-IJ2016.3-1']

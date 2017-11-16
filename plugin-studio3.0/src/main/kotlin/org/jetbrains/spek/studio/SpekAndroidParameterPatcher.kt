@@ -101,7 +101,7 @@ class SpekAndroidParameterPatcher: SpekJvmParameterPatcher {
                     }
 
                     if (javaModel.buildFolderPath != null) {
-                        val kotlinClasses = javaModel.buildFolderPath!!.toPath().resolve("classes").toFile()
+                        val kotlinClasses = javaModel.buildFolderPath!!.toPath().resolve("classes/kotlin").toFile()
 
                         if (kotlinClasses.exists()) {
                             addToClassPath(File(kotlinClasses, "main"), classPath, excludeScope)
