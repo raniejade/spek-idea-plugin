@@ -121,16 +121,18 @@ class SpekJvmRunConfigurationProducer: JavaRunConfigurationProducerBase<SpekJvmR
                     target = Target.Spec(cls.qualifiedName!!)
                 }
             } else if (element is PsiDirectory) {
-                val moduleRootManager = ModuleRootManager.getInstance(context.module)
-                val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
+                if (context.module != null) {
+                    val moduleRootManager = ModuleRootManager.getInstance(context.module)
+                    val roots = moduleRootManager.getSourceRoots(JavaSourceRootType.TEST_SOURCE)
 
-                if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
-                    val psiPackage = element.getPackage()
+                    if (VfsUtil.isUnder(element.virtualFile, roots.toSet())) {
+                        val psiPackage = element.getPackage()
 
-                    if (psiPackage != null) {
-                        target = Target.Package(
-                            psiPackage.qualifiedName
-                        )
+                        if (psiPackage != null) {
+                            target = Target.Package(
+                                psiPackage.qualifiedName
+                            )
+                        }
                     }
                 }
 
