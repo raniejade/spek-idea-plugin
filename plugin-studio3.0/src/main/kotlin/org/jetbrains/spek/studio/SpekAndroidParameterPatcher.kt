@@ -4,7 +4,7 @@ import com.android.builder.model.JavaArtifact
 import com.android.tools.idea.gradle.project.GradleProjectInfo
 import com.android.tools.idea.gradle.project.facet.java.JavaFacet
 import com.android.tools.idea.gradle.project.model.AndroidModuleModel
-import com.android.tools.idea.gradle.util.FilePaths
+import com.android.tools.idea.io.FilePaths
 import com.android.tools.idea.testartifacts.scopes.FileRootSearchScope
 import com.android.tools.idea.testartifacts.scopes.TestArtifactSearchScopes
 import com.intellij.execution.configurations.JavaParameters

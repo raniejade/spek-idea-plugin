@@ -8,7 +8,7 @@ intellij {
     downloadSources = true
 
     localPath = "$localAndroidStudio"
-    plugins = ['org.jetbrains.kotlin:1.1.51-release-Studio3.0-1', 'gradle']
+    plugins = ['org.jetbrains.kotlin:1.2.31-release-Studio3.1-1', 'gradle']
     alternativeIdePath = "$localAndroidStudio"
 }
 
