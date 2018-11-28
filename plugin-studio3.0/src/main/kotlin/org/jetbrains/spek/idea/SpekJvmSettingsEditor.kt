@@ -209,11 +209,11 @@ class SpekJvmSettingsEditor(val project: Project): SettingsEditor<SpekJvmRunConf
         ), "Spec", "West")
 
         spec.component.childComponent.addDocumentListener(object: DocumentListener {
-            override fun documentChanged(event: DocumentEvent) {
+            override fun documentChanged(event: DocumentEvent?) {
                 selectedPath = ""
             }
 
-            override fun beforeDocumentChange(event: DocumentEvent) {
+            override fun beforeDocumentChange(event: DocumentEvent?) {
             }
 
         })

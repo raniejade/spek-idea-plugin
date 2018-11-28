@@ -1,10 +1,19 @@
 package org.jetbrains.spek.idea
 
 import com.intellij.diagnostic.logging.LogConfigurationPanel
-import com.intellij.execution.*
+import com.intellij.execution.CommonJavaRunConfigurationParameters
+import com.intellij.execution.DefaultExecutionResult
+import com.intellij.execution.ExecutionResult
+import com.intellij.execution.Executor
+import com.intellij.execution.JavaRunConfigurationExtensionManager
 import com.intellij.execution.application.BaseJavaApplicationCommandLineState
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.execution.configurations.JavaParameters
+import com.intellij.execution.configurations.JavaRunConfigurationModule
+import com.intellij.execution.configurations.ModuleBasedConfiguration
+import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.RuntimeConfigurationException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
@@ -28,14 +37,13 @@ import org.junit.platform.commons.annotation.Testable
 import org.junit.platform.engine.TestEngine
 import org.junit.platform.launcher.Launcher
 import org.opentest4j.TestSkippedException
-import java.util.*
+import java.util.Arrays
 
 /**
  * @author Ranie Jade Ramiso
  */
 open class SpekJvmRunConfiguration(javaRunConfigurationModule: JavaRunConfigurationModule, factory: ConfigurationFactory, name: String)
-: ModuleBasedConfiguration<JavaRunConfigurationModule, RunConfigurationOptions>(name, javaRunConfigurationModule, factory), CommonJavaRunConfigurationParameters {
-
+: ModuleBasedConfiguration<JavaRunConfigurationModule>(name, javaRunConfigurationModule, factory), CommonJavaRunConfigurationParameters {
     data class Data(
         var target: Target,
         var alternativeJrePath: String?,
@@ -100,7 +108,7 @@ open class SpekJvmRunConfiguration(javaRunConfigurationModule: JavaRunConfigurat
     override fun getConfigurationEditor(): SettingsEditor<SpekJvmRunConfiguration> {
         return SettingsEditorGroup<SpekJvmRunConfiguration>().apply {
             addEditor("Configuration", SpekJvmSettingsEditor(project))
-            JavaRunConfigurationExtensionManager.instance.appendEditors(this@SpekJvmRunConfiguration, this)
+            JavaRunConfigurationExtensionManager.getInstance().appendEditors(this@SpekJvmRunConfiguration, this)
             addEditor("Logs", LogConfigurationPanel())
         }
     }
