@@ -4,7 +4,6 @@ apply plugin: "kotlin"
 
 intellij {
     pluginName = 'spek-idea-plugin'
-    updateSinceUntilBuild = false
     downloadSources = true
 
     version = '2018.3'
@@ -18,4 +17,9 @@ dependencies {
 
 buildPlugin {
     baseName = ''
+}
+
+patchPluginXml {
+    sinceBuild = '183'
+    untilBuild = null
 }
