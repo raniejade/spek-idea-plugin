@@ -8,7 +8,7 @@ intellij {
     sameSinceUntilBuild = true
 
     localPath = "$localAndroidStudio"
-    plugins = ['org.jetbrains.kotlin:1.3.0-release-Studio3.2-1', 'gradle']
+    plugins = ['org.jetbrains.kotlin:1.3.0-release-Studio3.3-1', 'gradle']
     alternativeIdePath = "$localAndroidStudio"
 }
 
@@ -20,10 +20,11 @@ dependencies {
 
 buildPlugin {
     baseName = ''
-    classifier = 'studio3.2'
+    classifier = 'studio3.3'
 }
 
 patchPluginXml {
-    version = "${project.version}-studio3.2"
-    sinceBuild = '181.5540.*'
+    version = "${project.version}-studio3.3"
+    sinceBuild = '182.5107'
+    untilBuild = '182.5107.*'
 }
