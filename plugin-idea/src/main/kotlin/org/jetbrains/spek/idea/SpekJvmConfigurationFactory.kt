@@ -7,6 +7,9 @@ import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.project.Project
 
 class SpekJvmConfigurationFactory(type: ConfigurationType): ConfigurationFactory(type) {
+
+    override fun getId(): String = type.id
+
     override fun createTemplateConfiguration(project: Project): RunConfiguration =
         SpekJvmRunConfiguration(JavaRunConfigurationModule(project, true), this, "Un-named")
 }

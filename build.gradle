@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
-        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -29,11 +29,7 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            url "https://dl.bintray.com/jetbrains/spek"
-        }
-        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
-
+        maven { url "https://www.jetbrains.com/intellij-repository/releases" }
     }
 }
 
